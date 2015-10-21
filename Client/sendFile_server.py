@@ -6,7 +6,7 @@ port = 12345
 
 s.connect((host, port))
 s.send("Hi Server, I am connected now!")
-f = open('project-description.pdf', 'rb')
+f = open('README.pdf', 'rb')
 print 'Sending...'
 l = f.read(1024)
 while(l):

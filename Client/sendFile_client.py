@@ -4,7 +4,7 @@ s = socket.socket()
 host = socket.gethostname()
 port = 12345
 s.bind((host, port))
-f = open('sentfile.pdf', 'w')
+f = open('sentfile.txt', 'w')
 s.listen(5)
 while True:
 	c, addr = s.accept() # open connection with the client
