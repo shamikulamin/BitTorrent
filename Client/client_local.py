@@ -1,6 +1,6 @@
 import httplib
 import urllib
-import threading
+import thread
 import time
 import socket
 import sys
@@ -8,18 +8,18 @@ import sys
 HOST = socket.gethostname()    # server name goes in here
 PORT = 12345
 
-class AsyncWrite(threading.Thread):
-    def __init__(self, text, out):
-        threading.Thread.__init__(self)
-        self.text = text
-        self.out = out
-
-    def run(self):
-        f = open(self.out, "w")
-        f.write(self.text)
-        f.close()
-
-        print "Finished background file write to " + self.out
+def process_data(threadName, delay, response, filename):
+   #str = response.read(1024)
+   str = response.read(1024)
+   print filename
+   #print "Hi" + str
+   if len(str) == 0:
+      time.sleep(delay)
+   file = open(filename, "w")
+   #file.write("hello world in the new file\n")
+   #file.write("and another line\n")
+   file.write(str)
+   file.close()
 
 
 def put(commandName):
@@ -55,7 +55,7 @@ def get(commandName):
     socket1.close()
     return
 
-
+ip_address = socket.gethostbyname(socket.gethostname())
 while(1):
     inputCommand = raw_input("Enter your command: ")
     if (inputCommand == 'quit'):
@@ -73,11 +73,11 @@ while(1):
         #create a tracker for input file below
         elif tokens[0] == 'createTracker':
             #send the data to the server over post request
-            params = urllib.urlencode({'command':tokens[0],'filename':tokens[1], 'filesize':tokens[2], 'description':tokens[3],'md5':tokens[4],'ip':ip_address,'port':port})
+            params = urllib.urlencode({'command':tokens[0],'filename':tokens[1], 'filesize':tokens[2], 'description':tokens[3],'md5':tokens[4],'ip':ip_address,'port':PORT})
 
         #update tracker at tracker server
         elif tokens[0] == 'updateTracker':
-            params = urllib.urlencode({'command':tokens[0],'filename':tokens[1], 'startbyte':tokens[2], 'endbyte':tokens[3],'ip':ip_address,'port':port})
+            params = urllib.urlencode({'command':tokens[0],'filename':tokens[1], 'sbyte':tokens[2], 'ebyte':tokens[3],'ip':ip_address,'port':PORT})
    
         elif tokens[0] == 'get':
             params = urllib.urlencode({'command':tokens[0],'filenametrack':tokens[1]})
@@ -97,11 +97,22 @@ while(1):
             conn.request("POST", "/BTTracker/announce", params, headers)
             #response sent by the server
             response = conn.getresponse()
+            
+            if tokens[0] !='get':
+            	print response.read()
 
-            background = AsyncWrite("Hii" , 'vijay.txt')
-            uploadFileThread = AsyncUploadFile(response.read(1024))
+            if tokens[0] == 'get':
+            # Create two threads as follows
+				try:
+   					thread.start_new_thread( process_data, ("Thread-1", 2, response, tokens[1]) )
+   	
+				except:
+   					print "Error: unable to start thread"
 
-            background.start()
-            background.join()
+            #background = AsyncWrite("Hii" , 'vijay.txt')
+            #uploadFileThread = AsyncUploadFile(response.read(1024))
+
+            #background.start()
+            #background.join()
 
 
