@@ -6,6 +6,8 @@ import socket
 import sys
 import hashlib
 import time
+import clientThreadConfig
+import serverThreadConfig
 
 from utility import put, get, getMd5, getFileSize, process_data, createTrackerFile, PORT, HOST, ip_address
 
@@ -51,7 +53,8 @@ while(1):
             #set the header
             headers = {"Content-type": "application/x-www-form-urlencoded","Accept": "text/plain"}
             #try to connect to the server
-            conn = httplib.HTTPConnection("10.106.78.73:8080")
+            #print clientThreadConfig.config['ip']
+            conn = httplib.HTTPConnection(clientThreadConfig.config['ip'] + ":" + clientThreadConfig.config['port']);
             conn.request("POST", "/BTTracker/announce", params, headers)
             #response sent by the server
             response = conn.getresponse()
@@ -60,7 +63,7 @@ while(1):
                 print response.read()
 
             if tokens[0] == 'get':
-                print response.read()
+                #print response.read()
                 try:
                     thread.start_new_thread( process_data, ("Thread-1", 2, response, tokens[1]) )
                 except:

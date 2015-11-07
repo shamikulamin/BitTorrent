@@ -1,10 +1,11 @@
 import socket
 import sys
+import serverThreadConfig
 HOST = socket.gethostname()               
-PORT = 12346
+PORT = serverThreadConfig.config['port']
 
 socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-socket.bind((HOST, PORT))
+socket.bind((HOST, int(PORT)))
 
 socket.listen(1)
 while (1):
