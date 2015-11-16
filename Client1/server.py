@@ -10,6 +10,7 @@ def server_module(socket):
         conn, addr = socket.accept()
         print 'New client connected ..'
         reqCommand = conn.recv(1024)
+        response = reqCommand.split(",")
         print 'Client> %s' %(reqCommand)
         if (reqCommand == 'quit'):
             break
@@ -30,9 +31,9 @@ def server_module(socket):
                         break
                 print 'Receive Successful'
             elif (string[0] == 'download'):
-                with open(reqFile, 'rb') as file_to_send:
-                    for data in file_to_send:
-                        conn.sendall(data)
+                with open(response[0], 'rb') as file_to_send:
+                    file_to_send.seek(int(response[1]))
+                    conn.sendall(file_to_send.read(1024))
                 print 'Send Successful'
         conn.close()
 
