@@ -63,19 +63,32 @@ def getFileSize(filename):
     return size
 
 def process_data(threadName, delay, response, filename):
+    # response is the tracker file to be parsed #
     string = response.read(1024)
     while len(string) == 0:
         time.sleep(delay)
 
     if len(string) > 0:
         #filenameList = filename.split('.')
+        # begin write recd tracker tata to filename.track #
         file = open(filename+".track", "w")
-        
         file.write(string)
         file.close()
+        # end write recd tracker data to filename.track #
+
         string = parseTrackerFile(filename+'.track')
         #print string
-        downloadSegment(string)
+        # calculate which segements to download, then download them
+        inf = string.split(":")
+        resultFile = open(filename+".temp", "wb")
+        try:
+            thread.start_new_thread( downloadSegment, (resultFile, inf[0], inf[1], inf[2], int[3], filename));
+            print "data successfully written to file"
+        except:
+            print "Error: unable to start thread - process_data"
+        #resultFile.seek(inf[2])
+		# new download segment executes as thread, downloads segment indicated to stream, updates local tracker #
+		# pass arguments: open filestream, server ip, server port, segment begin, segment end
 
 
 def createTrackerFile(filename, description):
@@ -106,27 +119,10 @@ def parseTrackerFile(trackerFilename):
             string += val
     return string
 
-def downloadSegment(string):
-    socket1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    
-    inf = string.split(":")
-    socket1.connect((inf[1], int(inf[2])))
-    socket1.send("download " + inf[0])
-    
-    with open(inf[0]+".temp", 'wb') as file_to_write:
-        while True:
-            data = socket1.recv(1024)
-            # print data
-            if not data:
-                break
-            # print data
-            file_to_write.write(data)
-    file_to_write.close()
-
-    #os.rename(file_to_write, file_to_write.replace(".temp",""))
-    print 'Download file Successful'
-    socket1.close()
-    return 
-                
-    
-
+def downloadSegment(fileStream, server_addr, server_port, segment_beginaddr, segment_endaddr, fileName):
+	socket1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	socket1.connect((server_addr, server_port))
+	socket1.send("download " + fileName + ",segment_beginaddr" +"," + segment_endaddr)
+	data = socket1.recv(segment_endaddr - segment_beginaddr)
+	socket1.close()
+	resultFile.write(data)
