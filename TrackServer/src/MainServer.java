@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -13,37 +14,40 @@ import java.util.ArrayList;
 public class MainServer implements Runnable{
 	private Socket clientSocket;
 	private ArrayList<KeyVal> req = new ArrayList<>();
-	public PrintStream out;
+	public PrintWriter out;
+	OutputStream os;
 	String basePath = "/Users/shamikulamin/Documents/tracker files";
 	public MainServer(Socket client) {
 		this.clientSocket = client;
+		try {
+			os = this.clientSocket.getOutputStream();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	
 	@Override
 	public void run() {	
 		try{
-			out = new PrintStream(clientSocket.getOutputStream());
+			out = new PrintWriter(clientSocket.getOutputStream(),true);
 			BufferedReader ins = new BufferedReader(
 	                new InputStreamReader(clientSocket.getInputStream()));
 			String line;
 			int count=0;
 	        while ((line = ins.readLine()) != null) {
 	        	if(count==0){
+	        		System.out.println(line);
 	        		String tokens[] = line.split(" ");
 	        		String params[]=tokens[1].split("&");
 	        		for(int i=0;i<params.length;i++){
 	        			String info[]=params[i].split("=");
 	        			KeyVal obj = new KeyVal(info[0],info[1]);
 	        			req.add(obj);
-	        			System.out.println(req.size());
 	        		}
 	        	break;		
 	        	}
-	        }
-	        System.out.println(req.size());
-	        for(int w=0;w<req.size();w++){
-	        	System.out.println(req.get(w).key+"  "+req.get(w).val);
 	        }
 			
 	        String command = req.get(0).val;
@@ -61,7 +65,7 @@ public class MainServer implements Runnable{
 	    					}	
 	    				}
 	    				System.out.println(str);
-	    				out.println(str);
+	    				os.write(str.getBytes());
 	    				in.close();
 	    			}
 	    		}
@@ -112,14 +116,14 @@ public class MainServer implements Runnable{
 		    		BufferedWriter out1 = new BufferedWriter (new FileWriter(file,true));
 		    		out1.write("\n"+ip+":"+port+":"+sbyte+":"+ebyte);
 		    		out1.close();
-		    		out.println("Update Tracker Successful");
+		    		os.write(("Update Tracker Successful").getBytes());
 	    		}
 	    		catch(Exception e){
 	    			System.out.println(e);
 	    		}
 	    	}
 	    	else{
-	    		out.println("Invalid Command");
+	    		os.write(("Invalid Command").getBytes());
 	    	}
 		}
 		catch (Exception e){

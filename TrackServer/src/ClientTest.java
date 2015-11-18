@@ -1,4 +1,5 @@
 import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
@@ -20,6 +21,11 @@ public class ClientTest {
 		}
 
 		os = new PrintStream(sock.getOutputStream());
-		os.println("IM HERE");
+		os.println("get command=createtracker&sdsad=dggf&adasd=lnfsd&command=createtracker&sdsad=dggf&adasd=lnfsd&dasdjasldja=vnkjsfs&djakjsdnaskjnd=nvjkvkf");
+	//	DataInputStream is = new DataInputStream(sock.getInputStream());
+		BufferedReader ins = new BufferedReader(
+                new InputStreamReader(sock.getInputStream()));
+		System.out.println("CLIENT: " + ins.readLine());
+
 	}
 }

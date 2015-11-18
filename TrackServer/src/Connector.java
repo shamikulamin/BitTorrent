@@ -18,7 +18,7 @@ public class Connector {
 		while (true) {
 			try {
 				clientSocket = serverSocket.accept();
-				System.out.println("Accepted connection : " + clientSocket);
+				//System.out.println("Accepted connection : " + clientSocket);
 
 				new Thread(new MainServer(clientSocket)).start();
 
