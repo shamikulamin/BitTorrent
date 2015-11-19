@@ -64,6 +64,7 @@ def getFileSize(filename):
 
 def process_data_old(threadName, delay, response, filename):
     string = response.read(1024)
+
     while len(string) == 0:
         time.sleep(delay)
 
@@ -77,28 +78,33 @@ def process_data_old(threadName, delay, response, filename):
         #print string
         downloadSegment(string)
 
-def process_data(threadName, delay, response, filename):
+def process_data(threadName, delay, response, filename, relevant_path):
     # response is the tracker file to be parsed #
-    string = response.read(1024)
+    #TODO: uncomment if response is obtained here instead of response.read()
+    #string = response.read(1024)
+
+    string = response
     while len(string) == 0:
         time.sleep(delay)
 
     if len(string) > 0:
         #filenameList = filename.split('.')
         # begin write recd tracker tata to filename.track #
-        file = open(filename+".track", "w")
+        file = open(relevant_path + filename+"1.track", "w")
         file.write(string)
         file.close()
         # end write recd tracker data to filename.track #
 
-        string = parseTrackerFile(filename+'.track')
+        #string = parseTrackerFile(filename+'.track')
         #print string
         # calculate which segements to download, then download them
         inf = string.split(":")
-        resultFile = open(filename+".temp", "wb")
+        resultFile = open(relevant_path + filename+"1.temp", "wb")
+        print inf[1], inf[2]
+        #downloadSegment_old(string)
         try:
-            thread.start_new_thread( downloadSegment, (resultFile, inf[0], inf[1], inf[2], int[3], filename));
-            print "data successfully written to file"
+            thread.start_new_thread( downloadSegment, ("Thread-4",resultFile, inf[1], inf[2], inf[3], inf[4], filename));
+            #print "data successfully written to file"
         except:
             print "Error: unable to start thread - process_data"
         #resultFile.seek(inf[2])
@@ -119,7 +125,7 @@ def createTrackerFile(filename, description):
     #create the local copy of the tracker file
     #file = open("tracker"+str(timestamp)+".txt", "w")
     string = "Peer 1: "+ "Create Tracker" + " Filename: "+actualFileName+" Filesize: "+ str(filesize)+" Description:"+description+" MD5:"+md5+" "+str(ip_address)+":"+str(PORT)+":0:"+str(filesize)+":"+str(timestamp)
-    print string
+    #print string
     params = "command=createTracker&filename="+actualFileName+"&filesize="+str(filesize)+"&description="+description+"&md5="+md5+"&ip="+str(ip_address)+"&port="+str(PORT)+"&timestamp="+str(timestamp)
     #file.write(string)
     #file.close()
@@ -130,6 +136,7 @@ def createTrackerFile(filename, description):
 def updateTrackerFile(filename):
     fileNameList = filename.split("/")
     actualFileName = fileNameList[len(fileNameList) -1]
+    # 
     parseTrackerFile(filename)
     s_byte = 100
     e_byte = 200
@@ -149,7 +156,7 @@ def parseTrackerFile(trackerFilename):
             string += str(fileName[1])+":"
         if i>4:
             string += val
-    print string
+    #print string
     return string
 
 def downloadSegment_old(string):
@@ -174,13 +181,16 @@ def downloadSegment_old(string):
     socket1.close()
     return 
 
-def downloadSegment(fileStream, server_addr, server_port, segment_beginaddr, segment_endaddr, fileName):
+def downloadSegment(threadName, resultFile, server_addr, server_port, segment_beginaddr, segment_endaddr, fileName):
     socket1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    socket1.connect((server_addr, server_port))
-    socket1.send("download " + fileName + ",segment_beginaddr" +"," + segment_endaddr)
-    data = socket1.recv(segment_endaddr - segment_beginaddr)
-    socket1.close()
+    socket1.connect((server_addr, int(server_port)))
+    print "Server Address : ", server_addr, " Server Port: ", server_port
+    socket1.send("download," + fileName + ","+segment_beginaddr+"," + segment_endaddr)
+    data = socket1.recv(int(segment_endaddr) - int(segment_beginaddr))
+    resultFile.seek(int(segment_beginaddr))
     resultFile.write(data)
+    socket1.close()
+    
                 
     
 

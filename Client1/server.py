@@ -1,5 +1,5 @@
 def server_module(socket):
-    HOST_S = socket.gethostname()               
+    HOST_S = "127.0.0.1"#socket.gethostname()               
     PORT_S = 12345
 
     socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -17,11 +17,12 @@ def server_module(socket):
         #elif (reqCommand == lls):
             #list file in server directory
         else:
-            string = reqCommand.split(' ', 1)   #in case of 'put' and 'get' method
-            reqFile = string[1] 
+            print "Requested bytes " , response[0], response[1], response[2]
+            #string = reqCommand.split(' ', 1)   #in case of 'put' and 'get' method
+            reqFile = response[1] 
 
-            if (string[0] == 'upload'):
-                with open(reqFile, 'wb') as file_to_write:
+            if (response[0] == 'upload'):
+                with open("./shared"+reqFile, 'wb') as file_to_write:
                     while True:
                         data = conn.recv(1024)
                         if not data:
@@ -30,9 +31,10 @@ def server_module(socket):
                         file_to_write.close()
                         break
                 print 'Receive Successful'
-            elif (string[0] == 'download'):
-                with open(response[0], 'rb') as file_to_send:
-                    file_to_send.seek(int(response[1]))
+            elif (response[0] == 'download'):
+                #print "Here I am"
+                with open("./shared/"+response[1], 'rb') as file_to_send:
+                    file_to_send.seek(int(response[2]))
                     conn.sendall(file_to_send.read(1024))
                 print 'Send Successful'
         conn.close()
