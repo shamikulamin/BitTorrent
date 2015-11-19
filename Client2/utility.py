@@ -49,8 +49,6 @@ def get(commandName):
     socket1.close()
     return
 
-
-
 def getMd5(fname):
     hash = hashlib.md5()
     with open(fname, "rb") as f:
@@ -64,7 +62,7 @@ def getFileSize(filename):
     size = fr.tell()
     return size
 
-def process_data(threadName, delay, response, filename):
+def process_data_old(threadName, delay, response, filename):
     string = response.read(1024)
     while len(string) == 0:
         time.sleep(delay)
@@ -79,20 +77,48 @@ def process_data(threadName, delay, response, filename):
         #print string
         downloadSegment(string)
 
+def process_data(threadName, delay, response, filename):
+    # response is the tracker file to be parsed #
+    string = response.read(1024)
+    while len(string) == 0:
+        time.sleep(delay)
+
+    if len(string) > 0:
+        #filenameList = filename.split('.')
+        # begin write recd tracker tata to filename.track #
+        file = open(filename+".track", "w")
+        file.write(string)
+        file.close()
+        # end write recd tracker data to filename.track #
+
+        string = parseTrackerFile(filename+'.track')
+        #print string
+        # calculate which segements to download, then download them
+        inf = string.split(":")
+        resultFile = open(filename+".temp", "wb")
+        try:
+            thread.start_new_thread( downloadSegment, (resultFile, inf[0], inf[1], inf[2], int[3], filename));
+            print "data successfully written to file"
+        except:
+            print "Error: unable to start thread - process_data"
+        #resultFile.seek(inf[2])
+        # new download segment executes as thread, downloads segment indicated to stream, updates local tracker #
+        # pass arguments: open filestream, server ip, server port, segment begin, segment end
+
+
 
 def createTrackerFile(filename, description):
+    #print filename
     fileNameList = filename.split("/")
     #actualFileName = fileNameList[6]  <--written only to ever work on vijay's computer...
-    actualFileName = fileNameList[1]
+    actualFileName = fileNameList[len(fileNameList) -1]
     filesize = getFileSize(filename)
     md5 = getMd5(filename)
     timestamp = int(time.time())
-    #print timestamp
-    #print filesize
-    #print md5
+
     #create the local copy of the tracker file
     #file = open("tracker"+str(timestamp)+".txt", "w")
-    string = "Peer 1: "+ " Filename: "+actualFileName+" Filesize: "+ str(filesize)+" Description:"+description+" MD5:"+md5+" "+str(ip_address)+":"+str(PORT)+":0:"+str(filesize)+":"+str(timestamp)
+    string = "Peer 1: "+ "Create Tracker" + " Filename: "+actualFileName+" Filesize: "+ str(filesize)+" Description:"+description+" MD5:"+md5+" "+str(ip_address)+":"+str(PORT)+":0:"+str(filesize)+":"+str(timestamp)
     print string
     params = "command=createTracker&filename="+actualFileName+"&filesize="+str(filesize)+"&description="+description+"&md5="+md5+"&ip="+str(ip_address)+"&port="+str(PORT)+"&timestamp="+str(timestamp)
     #file.write(string)
@@ -101,18 +127,32 @@ def createTrackerFile(filename, description):
    
     return params
 
+def updateTrackerFile(filename):
+    fileNameList = filename.split("/")
+    actualFileName = fileNameList[len(fileNameList) -1]
+    parseTrackerFile(filename)
+    s_byte = 100
+    e_byte = 200
+    string = "Peer 1: "+" Updatetracker "+ " Filename: "+ actualFileName+ " start byte "+ str(s_byte)+" End byte "+ str(e_byte)+" ip-address "+ str(ip_address)+" port "+str(PORT)
+    params = "command=updateTracker&filename="+actualFileName+"&s_byte="+str(s_byte)+"&e_byte="+str(e_byte)+"&ip="+str(ip_address)+"&port="+PORT
+    return params
+
 def parseTrackerFile(trackerFilename):
     string=""
     lines = [line.rstrip('\n') for line in open(trackerFilename, "r")]
+    #print lines
+    # Read the file from the last line
+    # len(lines) -1 should give the last line, decrement i
     for i, val in enumerate(lines):
         if i == 0:
             fileName = val.split(": ");
             string += str(fileName[1])+":"
-        if i>3:
+        if i>4:
             string += val
+    print string
     return string
 
-def downloadSegment(string):
+def downloadSegment_old(string):
     socket1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     
     inf = string.split(":")
@@ -133,6 +173,14 @@ def downloadSegment(string):
     print 'Download file Successful'
     socket1.close()
     return 
+
+def downloadSegment(fileStream, server_addr, server_port, segment_beginaddr, segment_endaddr, fileName):
+    socket1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    socket1.connect((server_addr, server_port))
+    socket1.send("download " + fileName + ",segment_beginaddr" +"," + segment_endaddr)
+    data = socket1.recv(segment_endaddr - segment_beginaddr)
+    socket1.close()
+    resultFile.write(data)
                 
     
 
