@@ -1,6 +1,0 @@
-Filename: file2.txt
-Filesize: 15
-Description:hello
-MD5:af80c9dc3558ad6048dcfa19c5b57c99
-#list of peers follow next
-10.106.38.170:12346:0:15:1446935534

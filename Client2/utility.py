@@ -79,20 +79,23 @@ def process_data(threadName, delay, response, filename):
 
 
 def createTrackerFile(filename, description):
+    fileNameList = filename.split("/")
+    actualFileName = fileNameList[6]
     filesize = getFileSize(filename)
     md5 = getMd5(filename)
     timestamp = int(time.time())
-    print timestamp
-    print filesize
-    print md5
+    #print timestamp
+    #print filesize
+    #print md5
     #create the local copy of the tracker file
-    file = open("tracker"+str(timestamp)+".txt", "w")
-    string = "Filename: "+filename+"\nFilesize: "+ str(filesize)+"\nDescription:"+description+"\nMD5:"+md5+"\n#list of peers follow next\n"+str(ip_address)+":"+str(PORT)+":0:"+str(filesize)+":"+str(timestamp)
-
-    file.write(string)
-    file.close()
+    #file = open("tracker"+str(timestamp)+".txt", "w")
+    string = "Peer 1: "+ " Filename: "+actualFileName+" Filesize: "+ str(filesize)+" Description:"+description+" MD5:"+md5+" "+str(ip_address)+":"+str(PORT)+":0:"+str(filesize)+":"+str(timestamp)
+    print string
+    params = "command=createTracker&filename="+actualFileName+"&filesize="+str(filesize)+"&description="+description+"&md5="+md5+"&ip="+str(ip_address)+"&port="+str(PORT)+"&timestamp="+str(timestamp)
+    #file.write(string)
+    #file.close()
     #send the data to the server over post request
-    params = urllib.urlencode({'command':'createTracker','filename':filename, 'filesize':filesize, 'description':description,'md5':md5,'ip':ip_address,'port':PORT,'timestamp':timestamp})
+   
     return params
 
 def parseTrackerFile(trackerFilename):
