@@ -1,4 +1,4 @@
-import thread
+﻿import thread
 import time
 import socket
 import sys
@@ -19,7 +19,7 @@ def execute_server(threadName):
 
 # Create two threads as follows
 try:
-  # thread.start_new_thread( execute_server, ("Thread-1",) )
+   thread.start_new_thread( execute_server, ("Thread-1",) )
    thread.start_new_thread( execute_client, ("Thread-2",2,) )
 except:
    print "Error: unable to start thread"

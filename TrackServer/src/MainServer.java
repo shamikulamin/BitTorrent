@@ -16,7 +16,7 @@ public class MainServer implements Runnable{
 	private ArrayList<KeyVal> req = new ArrayList<>();
 	public PrintWriter out;
 	OutputStream os;
-	String basePath = "/Users/shamikulamin/Documents/tracker files";
+	String basePath = "C:\\Users\\mike.JOLLEY\\Documents\\trackers";
 	public MainServer(Socket client) {
 		this.clientSocket = client;
 		try {

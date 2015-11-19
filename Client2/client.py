@@ -1,4 +1,4 @@
-import httplib
+﻿import httplib
 import urllib
 import thread
 import time
@@ -74,7 +74,7 @@ def handle_tracker_server(threadname,socket, delay, relevant_path, included_exte
                     params = createTrackerFile(relevant_path + file, "Hello")
                     isShared = 1 
                     #print ("Create tracker file for ", file)
-                    break
+                    #break
 
         # else:
         #     time.sleep(delay)
@@ -132,8 +132,10 @@ def connect_peer_server(threadname, delay ):
 def client_module(socket):
     isShare = 0;
 
-    listOfFiles1 = glob.glob("/Users/vijay/BitTorrent/Client2/shared/*.*")
-    relevant_path = "/Users/vijay/BitTorrent/Client2/shared/"
+    #listOfFiles1 = glob.glob("/Users/vijay/BitTorrent/Client2/shared/*.*")
+    listOfFiles1 = glob.glob("./shared/*.*")
+    #relevant_path = "/Users/vijay/BitTorrent/Client2/shared/"  <-- can only work on vijay's computer, also affects string split routines in other program functions
+    relevant_path = "./shared/"
     included_extenstions = ['jpg', 'txt', 'png', 'gif','png','pdf']
     listOfFiles = [fn for fn in os.listdir(relevant_path)
             if any(fn.endswith(ext) for ext in included_extenstions)]

@@ -1,4 +1,4 @@
-import httplib
+﻿import httplib
 import urllib
 import time
 import socket
@@ -10,9 +10,11 @@ import os
 import clientThreadConfig
 import serverThreadConfig
 
-HOST = socket.gethostname()    # server name goes in here
+#HOST = socket.gethostname()    # server name goes in here
+HOST = "127.0.0.1"
 PORT = serverThreadConfig.config['port']
-ip_address = socket.gethostbyname(socket.gethostname())
+#ip_address = socket.gethostbyname(socket.gethostname())
+ip_address = "127.0.0.1"
 
 def put(commandName):
     socket1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -57,7 +59,7 @@ def getMd5(fname):
     return hash.hexdigest()
 
 def getFileSize(filename):
-    fr = open(filename, "r")
+    fr = open((filename), "r")
     fr.seek(0,2) # move the cursor to the end of the file
     size = fr.tell()
     return size
@@ -80,7 +82,8 @@ def process_data(threadName, delay, response, filename):
 
 def createTrackerFile(filename, description):
     fileNameList = filename.split("/")
-    actualFileName = fileNameList[6]
+    #actualFileName = fileNameList[6]  <--written only to ever work on vijay's computer...
+    actualFileName = fileNameList[1]
     filesize = getFileSize(filename)
     md5 = getMd5(filename)
     timestamp = int(time.time())
