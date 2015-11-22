@@ -13,10 +13,12 @@ import os
 
 from utility import put, get, getMd5, getFileSize, process_data, createTrackerFile, updateTrackerFile, PORT, HOST, ip_address, parseTrackerFile
 
-
 def connect_tracker_server(params,socket, command):
+    print "Tracker server called "
     socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    socket.bind((HOST, int(PORT)))
+    tracker_server_host ="10.106.78.73"
+    tracker_server_port = "4444"
+    socket.bind((tracker_server_host, int(tracker_server_port)))
 
     socket.listen(1)
     while (1):
@@ -126,7 +128,7 @@ def connect_peer_server(threadname, delay, relevant_path, downloadedFiles, downl
         #read the response and get all the files that doesn't exist with the peer
 
         #Below list of files should be downloaded at this peer
-        toBeDownloadedFileList = ["abc.txt"]
+        toBeDownloadedFileList = ["client1.txt"]
         #print "downloading Files" , downloadingFiles, " toBeDownloadedFileList ", toBeDownloadedFileList
         for trackerFile in toBeDownloadedFileList:
             if trackerFile not in downloadingFiles:
@@ -139,11 +141,12 @@ def connect_peer_server(threadname, delay, relevant_path, downloadedFiles, downl
 
                 pathToFile = relevant_path + trackerFile
                 responseString = parseTrackerFile(pathToFile)
-                print "Got tracker file" , responseString
+                print "Got tracker file - " , responseString, "\n\n"
                 try:
+                    #print "END HERE "
                     # try downloading the files as per the tracker file
                     #pass the contents of tracker file 
-                    thread.start_new_thread( process_data, ("Thread-3", 2, responseString, trackerFile, relevant_path) )
+                    thread.start_new_thread( process_data, ("Thread-3", 2, str(responseString[0]), trackerFile, relevant_path) )
                 except:
                     print "Error: unable to start thread - process_data"
 
@@ -153,21 +156,25 @@ def connect_peer_server(threadname, delay, relevant_path, downloadedFiles, downl
 
 
 def client_module(socket):
-    isShare = 0;
+    #isShare = 0;
 
     #listOfFiles1 = glob.glob("/Users/vijay/BitTorrent/Client2/shared/*.*")
-    listOfFiles1 = glob.glob("./shared/*.*")
+    #listOfFiles1 = glob.glob("./shared/*.*")
     #relevant_path = "/Users/vijay/BitTorrent/Client2/shared/"  <-- can only work on vijay's computer, also affects string split routines in other program functions
+    
+    #get the shared folders where the files to be uploaded and downloaded would be saved for current peer
     relevant_path = "./shared/"
     included_extenstions = ['jpg', 'txt', 'png', 'gif','png','pdf']
     listOfFiles = [fn for fn in os.listdir(relevant_path)
             if any(fn.endswith(ext) for ext in included_extenstions)]
     #print listOfFiles
-    inputCommand = "share"
+    #inputCommand = "share"
     sharedFiles = [] 
     trackerUpdateTime = 5
 
+    # List of files which are completely downloaded
     downloadedFiles =[]
+    # List of files whose segments are downloaded, incomplete.
     downloadingFiles =[]
 
 
