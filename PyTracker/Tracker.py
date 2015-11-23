@@ -2,18 +2,19 @@ from socket import *
 import os
 from os import path
 import thread
+import time
 
 BUFF = 1024
 HOST = '127.0.0.1'# must be input parameter @TODO
 PORT = 4444 # must be input parameter @TODO
-basePath = "/Users/shamikulamin/Documents/tracker files/"
+basePath = "./TrackerFiles/"
 def response(key):
     return 'Server response: ' + key
 
 def handler(clientsock,addr):
     while 1:
         data = clientsock.recv(BUFF)
-        tokens = data.split(' ')
+        tokens = data.split(' ',1)
         if not data: break
         print repr(addr) + ' recv:' + repr(data)
        # clientsock.send(response(data))
@@ -21,6 +22,7 @@ def handler(clientsock,addr):
         if "GET" == tokens[0]: break # type 'close' on client console to close connection from the server side
     keyVal = tokens[1].split('&')
     command = keyVal[0].split('=')[1]
+    print command
     if command.lower() == "createtracker":
         filename = keyVal[1].split('=')[1]
         filesize = keyVal[2].split('=')[1]
@@ -30,35 +32,38 @@ def handler(clientsock,addr):
         port = keyVal[6].split('=')[1]
         timestamp = keyVal[7].split('=')[1]
         fo=open(basePath+filename+".track", "w")
-	fo.write("File Name: "+filename+'\n')
+        fo.write("File Name: "+filename+'\n')
         fo.write("File Size: "+filesize+'\n')
-	fo.write("Description: "+desc+'\n')
-	fo.write("MD5 "+md5+'\n')
-	fo.write(ip+":"+port+":"+"0:"+filesize+":"+timestamp+'\n')
-	fo.close()
-	clientsock.send("200:Create Tracker Successful")
-    elif command.lower=="updatetracker":
-	filename = keyVal[1].split('=')[1]
-	sbyte = keyVal[2].split('=')[1]
-	ebyte = keyVal[3].split('=')[1]
-	ip = keyVal[4].split('=')[1]
-	port = keyVal[5].split('=')[1]
-	fo.open(basePath+filename+".track","a")
-	fo.write(ip+":"+port+":"+sbyte+":"+ebyte)
-	fo.close()
-	clientsock.send("200:Update Tracker Successful");
+        fo.write("Description: "+desc+'\n')
+        fo.write("MD5 "+md5+'\n')
+        fo.write("#list of peers follows next\n")
+        fo.write(ip+":"+port+":"+"0:"+filesize+":"+timestamp+'\n')
+
+        fo.close()
+        clientsock.send("200:Create Tracker Successful")
+    elif command.lower()=="updatetracker":
+        filename = keyVal[1].split('=')[1]
+        sbyte = keyVal[2].split('=')[1]
+        ebyte = keyVal[3].split('=')[1]
+        ip = keyVal[4].split('=')[1]
+        port = keyVal[5].split('=')[1]
+        print "Updated segment line is: ",filename, sbyte, ebyte, ip, port
+        fo =open(basePath+filename,"a+")
+        fo.write(ip+":"+port+":"+sbyte+":"+ebyte+":"+str(int(time.time()))+"\n")
+        fo.close()
+        clientsock.send("200:Update Tracker Successful");
     elif command.lower()=="list":
-	for files in os.listdir(basePath):
-	    if files.endswith(".track"):
-		clientsock.send(files+'\n')
+	   for files in os.listdir(basePath):
+	       if files.endswith(".track"):
+		      clientsock.send(files+'\n')
     elif command.lower()=="get":
-	filename=keyVal[1].split('=')[1]
-	with open(basePath+filename,'r')as f:
-	    lines=[line.strip() for line in f]
-	    for l in lines:
-		clientsock.send(l+'\n')
+       filename=keyVal[1].split('=')[1]
+       with open(basePath+filename,'r')as f:
+           lines=[line.strip() for line in f]
+           for l in lines:
+	          clientsock.send(l+'\n')
     else:
-	clientsock.send("Invalid Command")
+	   clientsock.send("Invalid Command")
 	
     clientsock.close()
     print addr, "- closed connection" #log on console

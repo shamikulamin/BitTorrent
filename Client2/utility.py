@@ -137,26 +137,30 @@ def createTrackerFile(filename, description):
     timestamp = int(time.time())
 
     #create the local copy of the tracker file
-    file = open("tracker"+str(timestamp)+".txt", "w")
-    string = "Peer 1: "+ "Create Tracker" + " Filename: "+actualFileName+" Filesize: "+ str(filesize)+" Description:"+description+" MD5:"+md5+" "+str(ip_address)+":"+str(PORT)+":0:"+str(filesize)+":"+str(timestamp)
+    #file = open("tracker"+str(timestamp)+".txt", "w")
+    string = "Peer 2: "+ "Create Tracker" + " Filename: "+actualFileName+" Filesize: "+ str(filesize)+" Description:"+description+" MD5:"+md5+" "+str(ip_address)+":"+str(PORT)+":0:"+str(filesize)+":"+str(timestamp)
     #print string
-    params = "command=createTracker&filename="+actualFileName+"&filesize="+str(filesize)+"&description="+description+"&md5="+md5+"&ip="+str(ip_address)+"&port="+str(PORT)+"&timestamp="+str(timestamp)
-    file.write(string)
-    file.close()
+    params = "GET command=createTracker&filename="+actualFileName+"&filesize="+str(filesize)+"&description="+description+"&md5="+md5+"&ip="+str(ip_address)+"&port="+str(PORT)+"&timestamp="+str(timestamp)
+    #file.write(string)
+    #file.close()
     #send the data to the server over post request
     #please take a quick shower we are running late # Sweta Ojha
    
     return params
 
-def updateTrackerFile(filename):
+def updateTrackerFile(filename, segmentLine):
     fileNameList = filename.split("/")
     actualFileName = fileNameList[len(fileNameList) -1]
-    # 
-    parseTrackerFile(filename)
-    s_byte = 100
-    e_byte = 200
-    string = "Peer 1: "+" Updatetracker "+ " Filename: "+ actualFileName+ " start byte "+ str(s_byte)+" End byte "+ str(e_byte)+" ip-address "+ str(ip_address)+" port "+str(PORT)
-    params = "command=updateTracker&filename="+actualFileName+"&s_byte="+str(s_byte)+"&e_byte="+str(e_byte)+"&ip="+str(ip_address)+"&port="+PORT
+    
+    # listOfSegments = parseTrackerFile(filename)
+    # print " Update Tracker File : List of segments: \n ", listOfSegments
+    # for index in range(len(listOfSegments) -1):
+    #     segmentLine = listOfSegments[index].split(":")
+    #     print segmentLine
+
+    string = "Peer 2: "+" Updatetracker "+ " Filename: "+ actualFileName+ " start byte "+ segmentLine[2]+" End byte "+ segmentLine[3]+" ip-address "+ segmentLine[0]+" port "+segmentLine[1]
+    params = "GET command=updateTracker&filename="+actualFileName+"&s_byte="+segmentLine[2]+"&e_byte="+segmentLine[3]+"&ip="+segmentLine[0]+"&port="+segmentLine[1]
+    
     return params
 
 def parseTrackerFile(trackerFilename):
