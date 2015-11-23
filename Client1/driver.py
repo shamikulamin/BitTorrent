@@ -11,7 +11,7 @@ from server import server_module
 
 def execute_client( threadName, delay):
 	#time.sleep(2)
-	client_module()
+	client_module(socket)
 
 def execute_server(threadName):
 	server_module(socket)
@@ -19,8 +19,8 @@ def execute_server(threadName):
 
 # Create two threads as follows
 try:
-	thread.start_new_thread( execute_server, ("Thread-1",) )
-   #thread.start_new_thread( execute_client, ("Thread-2",2,) )
+    thread.start_new_thread( execute_server, ("Thread-1",) )
+    thread.start_new_thread( execute_client, ("Thread-2",2,) )
 except:
 	print "Error: unable to start thread"
 

@@ -92,7 +92,7 @@ def process_data(threadName, delay, response, filename, relevant_path):
     if len(string) > 0:
         #filenameList = filename.split('.')
         # begin write recd tracker data to filename.track #
-        file = open(relevant_path + filename+".track", "w")
+        file = open(relevant_path + filename, "w")
         file.write(string)
         file.close()
         # end write recd tracker data to filename.track #
@@ -101,7 +101,7 @@ def process_data(threadName, delay, response, filename, relevant_path):
         print " list of segments in tracker file is: ", listOfSegmentsInTrackerFile, "\n\n"
         for index in range(len(listOfSegmentsInTrackerFile) -1):
         	segmentLine = listOfSegmentsInTrackerFile[index]
-        	#print "The segment line is : " , segmentLine, "\n\n"
+        	print "The segment line is : " , segmentLine, "\n\n"
 	        # calculate which segements to download, then download them
 	        inf = segmentLine.split(":")
 	        #print " The entire information: " , inf, "\n\n"

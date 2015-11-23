@@ -29,20 +29,27 @@ def connect_tracker_server(params,socket, command):
         data = socket.recv(1024)
         print "The received data from tracker server is :\n" ,data
         if command == 'list':
-            recvCode = data
+            socket.close()
+            return data
+            #listOfTrackerFilesString = data
+            #print "List of tracker files : ", listOfTrackerFilesString
+        
+        if command == 'get':
+            socket.close()
+            return data
 
         if command =='createTracker' or command == 'updateTracker':
             code = data.split(':')
             ##print code
             if(code[0] == '200'):  
-                recvCode = code[0]
+                socket.close()
+                return code[0]
            
         if not data:
             break;
 
+    
     socket.close()
-
-    return recvCode
     
 
 def handle_tracker_server(threadname, socket, delay, relevant_path, included_extenstions, listOfFiles, sharedFiles, updateTrackerFilesList, updatedListOfFiles):
@@ -63,11 +70,13 @@ def handle_tracker_server(threadname, socket, delay, relevant_path, included_ext
                     params = createTrackerFile(relevant_path + file, "Hello")
                     #isShared = 1 
                     print "Tracker file being Created for : ", currentFile 
+                    
                     #uncomment this line to get server response
-                    code = connect_tracker_server(params,socket, 'createTracker')
+                    recvCode=connect_tracker_server(params,socket, 'createTracker')
                     #print " Tracker file has been created: Code - " , code
-                    if code == '200':
+                    if recvCode == '200':
                         sharedFiles.append(currentFile)
+                        recvCode = 404
                    
 
         else:
@@ -95,9 +104,10 @@ def handle_tracker_server(threadname, socket, delay, relevant_path, included_ext
                         
                         print "Updated file Tracker for : ", updatedFile
                         #uncomment this line to get server response
-                        code = connect_tracker_server(params, socket, 'updateTracker')
-                        if code == '200':
+                        connect_tracker_server(params, socket, 'updateTracker')
+                        if recvCode == '200':
                             allSegmentUpdatedCount += 1
+                            recvCode = 404
                           
 
                     if allSegmentUpdatedCount == len(listOfSegments) -1:
@@ -111,12 +121,14 @@ def connect_peer_server(threadname, delay, relevant_path, downloadedFiles, downl
         #list all the files available in the tracker server
         params = "GET command=list"    #urllib.urlencode({'command':'list'})
         #TODO: uncomment this line to get server response
-        responseString = connect_tracker_server(params, socket, 'list')
-        print " Response String is : ", responseString
+        listString=connect_tracker_server(params, socket, 'list')
+        #responseString = listOfTrackerFilesString
+        #print " Response String is : ", listString
         #read the response and get all the files that doesn't exist with the peer
 
         #Below list of files should be downloaded at this peer
-        toBeDownloadedFileList = ["client1.txt"]
+        toBeDownloadedFileList = listString.split("\n")
+        print " New files that need to be downloaded: ", toBeDownloadedFileList
         #print "downloading Files" , downloadingFiles, " toBeDownloadedFileList ", toBeDownloadedFileList
         for trackerFile in toBeDownloadedFileList:
             if trackerFile not in downloadingFiles:
@@ -125,16 +137,14 @@ def connect_peer_server(threadname, delay, relevant_path, downloadedFiles, downl
                 #params = urllib.urlencode({'command':'get','filenametrack':trackerFile})
                 params = "GET command=get"+"&filenametrack="+trackerFile
                 #uncomment this line to get response from the server
-                #responseString = connect_tracker_server(params, 'get')
-
-                pathToFile = relevant_path + trackerFile
-                responseString = parseTrackerFile(pathToFile)
-                print "Got tracker file - " , responseString, "\n\n"
+                getTrackerString = connect_tracker_server(params, socket , 'get')
+                
+                print "Got tracker file - " , getTrackerString, "\n\n"
                 try:
                     #print "END HERE "
                     # try downloading the files as per the tracker file
                     #pass the contents of tracker file 
-                    thread.start_new_thread( process_data, ("Thread-3", 2, str(responseString[0]), trackerFile, relevant_path) )
+                    thread.start_new_thread( process_data, ("Thread-3", 2, getTrackerString, trackerFile, relevant_path) )
                 except:
                     print "Error: unable to start thread - process_data"
 
@@ -172,6 +182,13 @@ def client_module(socket):
     downloadedFiles =[]
     # List of files whose segments are downloaded, incomplete.
     downloadingFiles =[]
+    
+    # LIST tracker files at tracker server
+    listOfTrackerFilesString = ""
+    
+    #CREATETRACKER file at tracker server
+    recvCode = 404
+    
 
 
    # while(1):
