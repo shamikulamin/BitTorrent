@@ -137,13 +137,14 @@ def createTrackerFile(filename, description):
     timestamp = int(time.time())
 
     #create the local copy of the tracker file
-    #file = open("tracker"+str(timestamp)+".txt", "w")
+    file = open("tracker"+str(timestamp)+".txt", "w")
     string = "Peer 1: "+ "Create Tracker" + " Filename: "+actualFileName+" Filesize: "+ str(filesize)+" Description:"+description+" MD5:"+md5+" "+str(ip_address)+":"+str(PORT)+":0:"+str(filesize)+":"+str(timestamp)
     #print string
     params = "command=createTracker&filename="+actualFileName+"&filesize="+str(filesize)+"&description="+description+"&md5="+md5+"&ip="+str(ip_address)+"&port="+str(PORT)+"&timestamp="+str(timestamp)
-    #file.write(string)
-    #file.close()
+    file.write(string)
+    file.close()
     #send the data to the server over post request
+    #please take a quick shower we are running late # Sweta Ojha
    
     return params
 
@@ -208,19 +209,33 @@ def downloadSegment_old(string):
     socket1.close()
     return 
 
-def downloadSegment(threadName, resultFile, server_addr, server_port, segment_beginaddr, segment_endaddr, fileName):
-	#print "Server Address : ", server_addr, " Server Port: ", server_port   
-	socket1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	socket1.connect((server_addr, int(server_port)))
+def downloadSegment(threadName, file_to_write, server_addr, server_port, segment_beginaddr, segment_endaddr, fileName):
+    downloadSegmentStr = "download," + fileName + ","+segment_beginaddr+"," + segment_endaddr
+    #print "Server Address : ", server_addr, " Server Port: ", server_port   
+    socket1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    socket1.connect((server_addr, int(server_port)))
+    socket1.send(downloadSegmentStr)
+    #data = socket1.recv(1024)
 
-	socket1.send("download," + fileName + ","+segment_beginaddr+"," + segment_endaddr)
-	data = socket1.recv(int(segment_endaddr) - int(segment_beginaddr))
-	resultFile.seek(int(segment_beginaddr))
-	print "write: ", data, " into : " , fileName
-	#print " The segment list for file : " , fileName, " is: ", segmentDict.get(fileName," Not")
-	resultFile.write(data)
-	updateDownloadedSegmentList(fileName, segment_beginaddr)
-	socket1.close()
+    #with open(, 'wb') as file_to_write:
+    file_to_write.seek(int(segment_beginaddr),0)
+    #while True:
+    data = socket1.recv(1024)
+    print "Received data :" ,"\n\n" ,data
+    #if not data:
+        #break
+    # print data
+    file_to_write.write(data)
+    file_to_write.close()
+    print 'Download segment Successful from ',segment_beginaddr, " to ", segment_endaddr
+
+    socket1.close()
+    #resultFile.seek(int(segment_beginaddr))
+    #print "write: ", data, " into : " , fileName
+    #print " The segment list for file : " , fileName, " is: ", segmentDict.get(fileName," Not")
+    #resultFile.write(data)
+    updateDownloadedSegmentList(fileName, segment_beginaddr)
+    #socket1.close()
 
 
 def updateDownloadedSegmentList(filename, s_byte):

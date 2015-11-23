@@ -34,8 +34,11 @@ def server_module(socket):
             elif (response[0] == 'download'):
                 #print "Here I am"
                 with open("./shared/"+response[1], 'rb') as file_to_send:
-                    file_to_send.seek(int(response[2]))
-                    conn.sendall(file_to_send.read(1024))
+                    file_to_send.seek(int(response[2]),0)
+                    data = file_to_send.read(int(response[3]) - int(response[2]))
+                    print "Sent data : " , "\n From: ",response[2]," To: ", response[3], "\n\n" , data
+                    conn.sendall(data)
+
                 print 'Send Successful'
         conn.close()
 
