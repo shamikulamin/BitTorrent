@@ -267,11 +267,11 @@ def checkIfSegmentIsAlreadyDownloaded(filename, s_byte):
 
 def removeTrackerFilesForExistingFiles(listOfFiles, allTrackerFilesList):
     toBeDownloadedList = []
-    for currentFile in listOfFiles:
-        for index in range(len(allTrackerFilesList)-1):
-            print " File: ", currentFile, "  -  ", allTrackerFilesList[index]
-            if( allTrackerFilesList[index] != currentFile+".track"):
-                toBeDownloadedList.append(allTrackerFilesList[index])
+    for index in range(len(allTrackerFilesList)-1):
+        trackerFileName = allTrackerFilesList[index].split(".track")
+        if trackerFileName[0] not in listOfFiles:
+            print " File: ",trackerFileName[0] ,"  -  ", allTrackerFilesList[index]
+            toBeDownloadedList.append(allTrackerFilesList[index])
 
     print " To be downloaded List in : ", toBeDownloadedList
     return toBeDownloadedList
