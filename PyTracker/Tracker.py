@@ -56,7 +56,7 @@ def handler(clientsock,addr):
 		check=1
 	if check==1:
 	    fo =open(basePath+filename,"a+")
-	    fo.write(ip+":"+port+":"+sbyte+":"+ebyte+":"+timestamp+"\n")
+	    fo.write(construct)
 	    fo.close()
 	    clientsock.send("200:Update Tracker Successful")
 	else:
