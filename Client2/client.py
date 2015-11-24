@@ -11,7 +11,7 @@ import serverThreadConfig
 import glob
 import os
 
-from utility import put, get, getMd5, getFileSize, process_data, createTrackerFile, updateTrackerFile, PORT, HOST, ip_address, parseTrackerFile
+from utility import put, get, getMd5, getFileSize, process_data, createTrackerFile, updateTrackerFile, PORT, HOST, ip_address, parseTrackerFile, removeTrackerFilesForExistingFiles
 
 def connect_tracker_server(params,socket, command):
     #print "Tracker server called "
@@ -27,14 +27,15 @@ def connect_tracker_server(params,socket, command):
     while (1):
         time.sleep(2)
         data = socket.recv(1024)
-        print "The received data from tracker server is :\n" ,data
+        
         if command == 'list':
+            print "LIST of tracker Files  :\n" ,data
             socket.close()
             return data
-            #listOfTrackerFilesString = data
-            #print "List of tracker files : ", listOfTrackerFilesString
+           
         
         if command == 'get':
+            print "GET tracker File :\n" ,data
             socket.close()
             return data
 
@@ -115,7 +116,7 @@ def handle_tracker_server(threadname, socket, delay, relevant_path, included_ext
                         print "Tracker file has been UPDATED: ", updatedFile
 
 
-def connect_peer_server(threadname, delay, relevant_path, downloadedFiles, downloadingFiles ):
+def connect_peer_server(threadname, delay, relevant_path, downloadedFiles, downloadingFiles, listOfFiles ):
     while(1):
         #print " Connect Peer Server "
         #list all the files available in the tracker server
@@ -127,12 +128,16 @@ def connect_peer_server(threadname, delay, relevant_path, downloadedFiles, downl
         #read the response and get all the files that doesn't exist with the peer
 
         #Below list of files should be downloaded at this peer
-        toBeDownloadedFileList = listString.split("\n")
-        print " New files that need to be downloaded: ", toBeDownloadedFileList
+        allTrackerFilesList = listString.split("\n")
+        print " All Tracker Files Obtained: ", allTrackerFilesList
+        toBeDownloadedFileList = removeTrackerFilesForExistingFiles(listOfFiles,allTrackerFilesList)
+        
         #print "downloading Files" , downloadingFiles, " toBeDownloadedFileList ", toBeDownloadedFileList
-        for trackerFile in toBeDownloadedFileList:
-            if trackerFile not in downloadingFiles:
-                downloadingFiles.append(trackerFile)
+        if (len(downloadedFiles) < len(toBeDownloadedFileList)):
+            for trackerFile in toBeDownloadedFileList:
+
+                print " To be downloaded List in : ", trackerFile
+                downloadedFiles.append(trackerFile)
                 #get the tracker file for the this file
                 #params = urllib.urlencode({'command':'get','filenametrack':trackerFile})
                 params = "GET command=get"+"&filenametrack="+trackerFile
@@ -196,7 +201,7 @@ def client_module(socket):
     try:
         #pass the contents of tracker file 
         thread.start_new_thread( handle_tracker_server, ("Thread-1", socket, trackerUpdateTime, relevant_path, included_extenstions, listOfFiles, sharedFiles,updateTrackerFilesList, updatedListOfFiles) )
-        thread.start_new_thread(connect_peer_server, ("Thread-2", 2, relevant_path, downloadedFiles, downloadingFiles))
+        thread.start_new_thread(connect_peer_server, ("Thread-2", 2, relevant_path, downloadedFiles, downloadingFiles, listOfFiles))
     except:
         print "Error: unable to start thread - main "
 
