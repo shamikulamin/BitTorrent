@@ -47,23 +47,32 @@ def handler(clientsock,addr):
         ebyte = keyVal[3].split('=')[1]
         ip = keyVal[4].split('=')[1]
         port = keyVal[5].split('=')[1]
-        print "Updated segment line is: ",filename, sbyte, ebyte, ip, port
-        fo =open(basePath+filename,"a+")
-        fo.write(ip+":"+port+":"+sbyte+":"+ebyte+":"+str(int(time.time()))+"\n")
-        fo.close()
-        clientsock.send("200:Update Tracker Successful");
+	timestamp = keyVal[6].split('=')[1]
+	check = 0
+	construct=ip+":"+port+":"+sbyte+":"+ebyte+":"+timestamp+"\n"
+	with open(basePath+filename,'r')as f:
+	    lines=[line.strip() for line in f]
+	    if construct == lines:
+		check=1
+	if check==1:
+	    fo =open(basePath+filename,"a+")
+	    fo.write(ip+":"+port+":"+sbyte+":"+ebyte+":"+timestamp+"\n")
+	    fo.close()
+	    clientsock.send("200:Update Tracker Successful")
+	else:
+	    clientsock.send("200:Update Tracker Successful")    
     elif command.lower()=="list":
-	   for files in os.listdir(basePath):
-	       if files.endswith(".track"):
-		      clientsock.send(files+'\n')
+	for files in os.listdir(basePath):
+	    if files.endswith(".track"):
+		clientsock.send(files+'\n')
     elif command.lower()=="get":
-       filename=keyVal[1].split('=')[1]
-       with open(basePath+filename,'r')as f:
-           lines=[line.strip() for line in f]
-           for l in lines:
-	          clientsock.send(l+'\n')
+	filename=keyVal[1].split('=')[1]
+	with open(basePath+filename,'r')as f:
+	    lines=[line.strip() for line in f]
+	    for l in lines:
+		clientsock.send(l+'\n')
     else:
-	   clientsock.send("Invalid Command")
+	clientsock.send("Invalid Command")
 	
     clientsock.close()
     print addr, "- closed connection" #log on console
