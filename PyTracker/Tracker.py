@@ -1,5 +1,6 @@
-from socket import *
+﻿from socket import *
 import os
+import glob
 from os import path
 import thread
 import time
@@ -78,6 +79,9 @@ def handler(clientsock,addr):
     print addr, "- closed connection" #log on console
 
 if __name__=='__main__':
+    files = glob.glob(basePath+'*')
+    for f in files:
+        os.remove(f)
     ADDR = (HOST, PORT)
     serversock = socket(AF_INET, SOCK_STREAM)
     serversock.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
