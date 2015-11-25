@@ -6,11 +6,12 @@ import sys
 import hashlib
 import time
 import thread
+import threading
 import os
 import collections
 
-
 segmentDict = collections.defaultdict(list)
+lock = threading.Lock()
 
 def put(commandName, HOST, PORT):
     socket1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -289,10 +290,12 @@ def downloadSegment(threadName, fileNameTemp, server_addr, server_port, segment_
     socket1.send(downloadSegmentStr)
     #data = socket1.recv(1024)
     print "Received data :" ,"\n" 
-    with open(fileNameTemp, 'wb') as file_to_write:   
-        file_to_write.seek(int(segment_beginaddr),0)
+    lock.acquire()
+    with open(fileNameTemp, 'ab') as file_to_write:   
+        file_to_write.seek(int(segment_beginaddr)+1,0)
         while True:
             data = socket1.recv(maxSegmentSize)
+            print data
             if not data:
                 break
             #print data
@@ -300,6 +303,7 @@ def downloadSegment(threadName, fileNameTemp, server_addr, server_port, segment_
             #file_to_write.seek(int(segment_beginaddr),1024)
 
     file_to_write.close()
+    lock.release();
     print 'Download segment Successful from ',segment_beginaddr, " to ", segment_endaddr
 
     socket1.close()

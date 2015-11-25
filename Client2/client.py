@@ -158,9 +158,9 @@ def client_module(socket, config):
     
     #get the shared folders where the files to be uploaded and downloaded would be saved for current peer
     relevant_path = "./shared/"
-    included_extenstions = ['jpg', 'txt', 'png', 'gif','png','pdf']
+    included_extenstions = ['jpg', 'txt', 'png', 'gif','png','pdf','log']
     allowed_extensions =['track']
-    all_extenstions = ['jpg', 'txt', 'png', 'gif','png','pdf','track']
+    all_extenstions = ['jpg', 'txt', 'png', 'gif','png','pdf','track', 'log']
     listOfFiles = [fn for fn in os.listdir(relevant_path)
             if any(fn.endswith(ext) for ext in included_extenstions)]
 
