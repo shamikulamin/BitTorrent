@@ -1,4 +1,4 @@
-def server_module(socket):
+﻿def server_module(socket):
     HOST_S = "127.0.0.1"#socket.gethostname()               
     PORT_S = 12346
 
@@ -33,13 +33,13 @@ def server_module(socket):
                 print 'Receive Successful'
             elif (response[0] == 'download'):
                 #print "Here I am"
-                with open("./shared/"+response[1], 'rb') as file_to_send:
-                    file_to_send.seek(int(response[2]),0)
-                    data = file_to_send.read(int(response[3]) - int(response[2]))
-                    print "Sent data : " , "\n From: ",response[2]," To: ", response[3], "\n\n"
-                    conn.sendall(data)
-
-                print 'Send Successful'
+                if ((int(response[3])-int(response[2])) <= 1024)
+                    with open("./shared/"+response[1], 'rb') as file_to_send:
+                        file_to_send.seek(int(response[2]),0)
+                        data = file_to_send.read(int(response[3]) - int(response[2]))
+                        print "Sent data : " , "\n From: ",response[2]," To: ", response[3], "\n\n"
+                        conn.sendall(data)
+                        print 'Send Successful'
         conn.close()
 
     socket.close()
