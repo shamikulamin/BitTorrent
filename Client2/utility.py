@@ -8,8 +8,7 @@ import time
 import thread
 import os
 import collections
-import clientThreadConfig
-import serverThreadConfig
+
 
 segmentDict = collections.defaultdict(list)
 
@@ -220,7 +219,7 @@ def downloadSegment(threadName, file_to_write, server_addr, server_port, segment
     #data = socket1.recv(1024)
 
     #with open(, 'wb') as file_to_write:
-    print "Received data :" ,"\n\n" 
+    print "Received data :" ,"\n" 
     file_to_write.seek(int(segment_beginaddr),0)
     while True:
         data = socket1.recv(maxSegmentSize)
@@ -266,7 +265,7 @@ def removeTrackerFilesForExistingFiles(listOfFiles, allTrackerFilesList):
     toBeDownloadedList = []
     for index in range(len(allTrackerFilesList)-1):
         trackerFileName = allTrackerFilesList[index].split(".track")
-        if trackerFileName[0] not in listOfFiles:
+        if trackerFileName[0] not in listOfFiles and  trackerFileName not in listOfFiles:
             #print " File: ",trackerFileName[0] ,"  -  ", allTrackerFilesList[index]
             toBeDownloadedList.append(allTrackerFilesList[index])
 

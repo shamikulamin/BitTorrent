@@ -6,8 +6,6 @@ import socket
 import sys
 import hashlib
 import time
-import clientThreadConfig
-import serverThreadConfig
 import glob
 import os
 
@@ -70,7 +68,7 @@ def handle_tracker_server(threadname, socket, delay, relevant_path, included_ext
                     #print currentFile
                     params = createTrackerFile(relevant_path + file, "Hello", ip_address, PORT)
                     #isShared = 1 
-                    print "Tracker file being Created for : ", currentFile 
+                    print "Tracker file being Created for : ", currentFile ,"\n"
                     
                     #uncomment this line to get server response
                     recvCode=connect_tracker_server(params,socket, 'createTracker',ip_address, tracker_server_port, maxSegmentSize)
@@ -194,7 +192,7 @@ def client_module(socket, config):
     tracker_server_port = config["trackerServerPort"]
         
     #ip_address = socket.gethostbyname(socket.gethostname())
-    ip_address = '127.0.0.1'
+    ip_address = socket.gethostname() 
     maxSegmentSize = config["maxSegmentSize"]
     
     print "IP ADDRESS: ", ip_address, " PORT: ", PORT
