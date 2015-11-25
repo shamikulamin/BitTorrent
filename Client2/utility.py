@@ -265,7 +265,7 @@ def removeTrackerFilesForExistingFiles(listOfFiles, allTrackerFilesList):
     toBeDownloadedList = []
     for index in range(len(allTrackerFilesList)-1):
         trackerFileName = allTrackerFilesList[index].split(".track")
-        if trackerFileName[0] not in listOfFiles and  trackerFileName not in listOfFiles:
+        if trackerFileName[0] not in listOfFiles and trackerFileName not in listOfFiles:
             #print " File: ",trackerFileName[0] ,"  -  ", allTrackerFilesList[index]
             toBeDownloadedList.append(allTrackerFilesList[index])
 
