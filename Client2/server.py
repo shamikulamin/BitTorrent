@@ -1,5 +1,5 @@
 ﻿def server_module(socket, config):
-    HOST_S = socket.gethostname()               
+    HOST_S = socket.gethostbyname(socket.gethostname())               
     PORT_S = config["port"]
     maxSegmentSize = config["maxSegmentSize"]
 
