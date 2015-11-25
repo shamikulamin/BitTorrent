@@ -12,7 +12,7 @@ if __name__ == "__main__":
 
 
 BUFF = config["maxSegmentSize"]
-HOST = gethostname() # must be input parameter @TODO
+HOST = gethostbyname(gethostname()) # must be input parameter @TODO
 PORT = config["trackerServerPort"] # must be input parameter @TODO
 basePath = "./TrackerFiles/"
 def response(key):
@@ -42,7 +42,7 @@ def handler(clientsock,addr):
         fo.write("File Name: "+filename+'\n')
         fo.write("File Size: "+filesize+'\n')
         fo.write("Description: "+desc+'\n')
-        fo.write("MD5 "+md5+'\n')
+        fo.write("MD5: "+md5+'\n')
         fo.write("#list of peers follows next\n")
         fo.write(ip+":"+port+":"+"0:"+filesize+":"+timestamp+'\n')
 
@@ -94,7 +94,7 @@ if __name__=='__main__':
     serversock.bind(ADDR)
     serversock.listen(5)
     while 1:
-        print 'waiting for connection... listening on port', PORT
+        print 'waiting for connection... listening on port', PORT, HOST
         clientsock, addr = serversock.accept()
         print '...connected from:', addr
         thread.start_new_thread(handler, (clientsock, addr))
