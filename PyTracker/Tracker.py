@@ -5,9 +5,15 @@ from os import path
 import thread
 import time
 
-BUFF = 1024
-HOST = '127.0.0.1'# must be input parameter @TODO
-PORT = 4444 # must be input parameter @TODO
+if __name__ == "__main__":
+    config = {}
+    execfile("settings.conf", config) 
+    # python 3: exec(open("example.conf").read(), config)
+
+
+BUFF = config["maxSegmentSize"]
+HOST = gethostname() # must be input parameter @TODO
+PORT = config["trackerServerPort"] # must be input parameter @TODO
 basePath = "./TrackerFiles/"
 def response(key):
     return 'Server response: ' + key
