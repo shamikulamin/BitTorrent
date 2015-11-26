@@ -142,6 +142,7 @@ def process_data(threadName, delay, response, trackerFile, relevant_path, maxSeg
 
             #print " list of segments in tracker file is: ", listOfSegmentsInTrackerFile, "\n\n"
             for index in range(len(listOfSegmentsInTrackerFile) -1):
+                time.sleep(2)
                 segmentLine = listOfSegmentsInTrackerFile[index]
                 #print "Downloaded current segment : " , segmentLine, "\n\n"
 

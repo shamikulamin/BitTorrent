@@ -105,7 +105,7 @@ def process_data_old(threadName, delay, response, filename):
         #print string
         downloadSegment(string)
 
-def process_data(threadName, delay, response, trackerFile, relevant_path, maxSegmentSize):
+def process_data(threadName, delay, response, trackerFile, relevant_path, maxSegmentSize, ip_address, peer_server_port):
     # response is the tracker file to be parsed #
     #TODO: uncomment if response is obtained here instead of response.read()
     #string = response.read(1024)
@@ -142,6 +142,7 @@ def process_data(threadName, delay, response, trackerFile, relevant_path, maxSeg
 
             #print " list of segments in tracker file is: ", listOfSegmentsInTrackerFile, "\n\n"
             for index in range(len(listOfSegmentsInTrackerFile) -1):
+                time.sleep(2)
                 segmentLine = listOfSegmentsInTrackerFile[index]
                 #print "Downloaded current segment : " , segmentLine, "\n\n"
 
@@ -178,18 +179,27 @@ def process_data(threadName, delay, response, trackerFile, relevant_path, maxSeg
                 try:
                     #print "END HERE "
                     if isSegmentNeededToBeDownloaded == True:
-                        thread.start_new_thread( downloadSegment, ("Thread-4", fileNameTemp, inf[0], inf[1], inf[2], inf[3], filename, maxSegmentSize));
+                        thread.start_new_thread( downloadSegment, ("Thread-4", fileNameTemp, inf[0], inf[1], inf[2], inf[3], filename, maxSegmentSize,ip_address,peer_server_port, relevant_path));
                     #print "data successfully written to file"
                 except:
                     print "Error: unable to start thread - process_data"
                 #resultFile.seek(inf[2])
                 # new download segment executes as thread, downloads segment indicated to stream, updates local tracker #
                 # pass arguments: open filestream, server ip, server port, segment begin, segment end
-        print " All segments are Downloaded: \n", getMd5FromTrackerFile(relevant_path+trackerFile), getMd5(fileNameTemp)
+        print " All segments are Downloaded: \n"
+        md5ForDownloadedFile = getMd5FromTrackerFile(relevant_path+trackerFile)
+        md5ForOriginalFile = getMd5(fileNameTemp)
+        print "Md5 for Original file: ",md5ForDownloadedFile,"\n"
+        print "Md5 for downloaded file: ", md5ForOriginalFile ,"\n"
+        #print "MD5 same: str(md5ForDownloadedFile) == str(md5ForOriginalFile)", md5ForDownloadedFile.strip() == md5ForOriginalFile.strip()
+        if md5ForDownloadedFile.strip() == md5ForOriginalFile.strip():
+            os.rename(fileNameTemp, relevant_path+filename)
+            print "File successfully Downloaded. Not Corrupted \n\n"
+
+        #print "DONE\n\n"
         
         #check if the downloaded file is CORRECTLY downloaded
-        if(getMd5(fileNameTemp) == getMd5FromTrackerFile(relevant_path+trackerFile)):
-            print "File successfully Downloaded. Not Corrupted \n\n"
+        
 
 
 
@@ -281,7 +291,7 @@ def downloadSegment_old(string):
     socket1.close()
     return 
 
-def downloadSegment(threadName, fileNameTemp, server_addr, server_port, segment_beginaddr, segment_endaddr, fileName, maxSegmentSize):
+def downloadSegment(threadName, fileNameTemp, server_addr, server_port, segment_beginaddr, segment_endaddr, fileName, maxSegmentSize,ip_address,peer_server_port, relevant_path):
     print "Download segment: ", server_addr, server_port, segment_beginaddr, "  ",segment_endaddr,"\n\n"
     downloadSegmentStr = "download," + fileName + ","+segment_beginaddr+"," + segment_endaddr
     #print "Server Address : ", server_addr, " Server Port: ", server_port   
@@ -295,14 +305,25 @@ def downloadSegment(threadName, fileNameTemp, server_addr, server_port, segment_
         file_to_write.seek(int(segment_beginaddr)+1,0)
         while True:
             data = socket1.recv(maxSegmentSize)
-            print data
+            #print data
             if not data:
                 break
+
             #print data
             file_to_write.write(data)
+
+            with open(relevant_path+fileName+".track", "ab") as updateTrackerFileWithCurrentSegment:
+                segmentLineStr =str(ip_address)+":"+str(peer_server_port)+":"+segment_beginaddr+":"+segment_endaddr+":"+str(int(time.time()))+"\n"
+                print "Update tracker file with the current segment: \n"
+                print segmentLineStr
+                updateTrackerFileWithCurrentSegment.write(segmentLineStr)
+            updateTrackerFileWithCurrentSegment.close()
             #file_to_write.seek(int(segment_beginaddr),1024)
 
     file_to_write.close()
+
+    
+
     lock.release();
     print 'Download segment Successful from ',segment_beginaddr, " to ", segment_endaddr
 

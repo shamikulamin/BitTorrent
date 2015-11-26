@@ -207,7 +207,7 @@ def client_module(socket, config):
 
     try:
         #pass the contents of tracker file 
-        #thread.start_new_thread( handle_tracker_server, ("Thread-1", socket, trackerUpdateTime, relevant_path, included_extenstions, listOfFiles, sharedFiles,updateTrackerFilesList, updatedListOfFiles, ip_address, PORT, tracker_server_port,maxSegmentSize,maxFileSizeFromTrackerServer) )
+        thread.start_new_thread( handle_tracker_server, ("Thread-1", socket, trackerUpdateTime, relevant_path, included_extenstions, listOfFiles, sharedFiles,updateTrackerFilesList, updatedListOfFiles, ip_address, PORT, tracker_server_port,maxSegmentSize,maxFileSizeFromTrackerServer) )
         thread.start_new_thread(connect_peer_server, ("Thread-2",relevant_path, downloadedFiles, downloadingFiles, listOfFiles, allFilesList, ip_address, PORT, tracker_server_port,maxSegmentSize,maxFileSizeFromTrackerServer))
     except:
         print "Error: unable to start thread - main "
