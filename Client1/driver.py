@@ -1,4 +1,4 @@
-﻿import thread
+import thread
 import time
 import socket
 import sys

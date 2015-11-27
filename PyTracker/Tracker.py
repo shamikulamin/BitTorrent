@@ -5,15 +5,15 @@ from os import path
 import thread
 import time
 
-if __name__ == "__main__":
-    config = {}
-    execfile("settings.conf", config) 
+#if __name__ == "__main__":
+#    config = {}
+#    execfile("settings.conf", config) 
     # python 3: exec(open("example.conf").read(), config)
 
 
-BUFF = config["maxSegmentSize"]
+BUFF = 1024 #config["maxSegmentSize"]
 HOST = gethostbyname(gethostname()) # must be input parameter @TODO
-PORT = config["trackerServerPort"] # must be input parameter @TODO
+PORT = 4444 #config["trackerServerPort"] # must be input parameter @TODO
 basePath = "./TrackerFiles/"
 def response(key):
     return 'Server response: ' + key
