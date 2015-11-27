@@ -14,7 +14,7 @@ import time
 BUFF = 1024 #config["maxSegmentSize"]
 HOST = gethostbyname(gethostname()) # must be input parameter @TODO
 PORT = 4444 #config["trackerServerPort"] # must be input parameter @TODO
-basePath = "./TrackerFiles/"
+basePath = "./PyTracker/TrackerFiles/"
 def response(key):
     return 'Server response: ' + key
 

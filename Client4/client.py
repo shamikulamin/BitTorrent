@@ -157,7 +157,7 @@ def client_module(socket, config):
     #relevant_path = "/Users/vijay/BitTorrent/Client2/shared/"  <-- can only work on vijay's computer, also affects string split routines in other program functions
     
     #get the shared folders where the files to be uploaded and downloaded would be saved for current peer
-    relevant_path = "./Client1/shared/"
+    relevant_path = "./Client4/shared/"
     included_extenstions = ['jpg', 'txt', 'png', 'gif','png','pdf','log']
     allowed_extensions =['track']
     all_extenstions = ['jpg', 'txt', 'png', 'gif','png','pdf','track', 'log']

@@ -1,4 +1,4 @@
-import thread
+﻿import thread
 import time
 import socket
 import sys
@@ -10,7 +10,7 @@ from server import server_module
 
 if __name__ == "__main__":
     config = {}
-    execfile("./Client1/settings.conf", config) 
+    execfile("./Client11/settings.conf", config) 
     # python 3: exec(open("example.conf").read(), config)
 
     
