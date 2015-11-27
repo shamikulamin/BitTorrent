@@ -26,6 +26,8 @@ while 1:
         p7 = subprocess.Popen('python ./Client6/driver.py',shell=True)
         p8 = subprocess.Popen('python ./Client7/driver.py',shell=True)
     elif currentTime==startSeconds+90 and peerFlag2==1:
+        peerFlag2=0
+        print "Starting First Batch of Peers"
         p9 = subprocess.Popen('python ./Client8/driver.py',shell=True)
         p10 = subprocess.Popen('python ./Client9/driver.py',shell=True)
         p11 = subprocess.Popen('python ./Client10/driver.py',shell=True)
