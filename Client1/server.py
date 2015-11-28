@@ -10,7 +10,7 @@
     socket.listen(1)
     while (1):
         conn, addr = socket.accept()
-        print 'Peer 2 : New client connected ..'
+        print 'Peer 1 : New client connected ..'
         reqCommand = conn.recv(maxSegmentSize)
         response = reqCommand.split(",")
         print 'Client> %s' %(reqCommand)
@@ -19,7 +19,7 @@
         #elif (reqCommand == lls):
             #list file in server directory
         else:
-            print "Peer 2: Requested bytes " , response[0], response[1], response[2]
+            print "Peer 1: Requested bytes " , response[0], response[1], response[2]
             #string = reqCommand.split(' ', 1)   #in case of 'put' and 'get' method
             reqFile = response[1] 
 
@@ -32,7 +32,7 @@
                         file_to_write.write(data)
                         file_to_write.close()
                         break
-                print 'Peer 2 - Receive Successful'
+                print 'Peer 1 - Receive Successful'
             elif (response[0] == 'download'):
                 #print "Here I am"
                 if ((int(response[3])-int(response[2])) <= int(maxSegmentSize)):
@@ -41,16 +41,16 @@
                         data = file_to_send.read(int(response[3]) - int(response[2]))
                         #print "Sent data : " , "\n From: ",response[2]," To: ", response[3], "\n\n"
                         conn.sendall(data)
-                        print 'Peer 2 - Send Successful'
+                        print 'Peer 1 - Send Successful'
                 elif ((int(response[3])-int(response[2])) <= int(maxSegmentSize)):
                     with open(pathToSharedFolder+response[1]+".temp", 'rb') as file_to_send:
                         file_to_send.seek(int(response[2]),0)
                         data = file_to_send.read(int(response[3]) - int(response[2]))
                         #print "Sent data : " , "\n From: ",response[2]," To: ", response[3], "\n\n"
                         conn.sendall(data)
-                        print 'Peer 2 - Send Successful'
+                        print 'Peer 1 - Send Successful'
                 else: 
-                    print "Peer 2 - Request segment size is greater than 1 KB. Don't send anything !! \n\n"
+                    print "Peer 1 - Request segment size is greater than 1 KB. Don't send anything !! \n\n"
         conn.close()
 
     socket.close()

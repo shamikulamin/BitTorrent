@@ -27,13 +27,13 @@ def connect_tracker_server(params,socket, command, tracker_server_host, tracker_
         data = socket.recv(maxFileSizeFromTrackerServer)
         
         if command == 'list':
-            print "Peer 2 - LIST of tracker Files  :\n" ,data
+            print "Peer 1 - LIST of tracker Files  :\n" ,data
             socket.close()
             return data
            
         
         if command == 'get':
-            print "Peer 2 - GET tracker File :\n" ,data
+            print "Peer 1 - GET tracker File :\n" ,data
             socket.close()
             return data
 
@@ -100,7 +100,7 @@ def handle_tracker_server(threadname, socket, delay, relevant_path, included_ext
                 #print " Update Tracker File : List of segments: \n ", listOfSegments
                 for index in range(len(listOfSegments) -1):
                     segmentLine = listOfSegments[index].split(":")
-                    print "Peer 2: Update the tracker server file with ", segmentLine,"\n\n"
+                    print "Peer 1: Update the tracker server file with ", segmentLine,"\n\n"
 
                     params = updateTrackerFile(relevant_path+file, segmentLine)
                     #print " Update Tracker Params: ", params
@@ -131,28 +131,28 @@ def connect_peer_server(threadname, relevant_path, downloadedFiles, downloadingF
         #Below list of files should be downloaded at this peer
         allTrackerFilesList = listString.split("\n")
         #print " All Tracker Files Obtained: ", allTrackerFilesList
-        toBeDownloadedFileList = removeTrackerFilesForExistingFiles(relevant_path,allTrackerFilesList)
+        #toBeDownloadedFileList = removeTrackerFilesForExistingFiles(relevant_path,allTrackerFilesList)
         
         #print "downloading Files" , downloadingFiles, " toBeDownloadedFileList ", toBeDownloadedFileList
-        if (len(downloadedFiles) < len(toBeDownloadedFileList)):
-            for trackerFile in toBeDownloadedFileList:
+        #if (len(downloadedFiles) < len(toBeDownloadedFileList)):
+        for trackerFile in allTrackerFilesList:
 
-                #print " To be downloaded List in : ", trackerFile
-                downloadedFiles.append(trackerFile)
-                #get the tracker file for the this file
-                #params = urllib.urlencode({'command':'get','filenametrack':trackerFile})
-                params = "GET command=get"+"&filenametrack="+trackerFile
-                #uncomment this line to get response from the server
-                getTrackerString = connect_tracker_server(params, socket , 'get',ip_address, tracker_server_port, maxSegmentSize,maxFileSizeFromTrackerServer)
-                
-                #print "GET Tracker File: \n " , getTrackerString, "\n\n"
-                try:
-                    #print "END HERE "
-                    # try downloading the files as per the tracker file
-                    #pass the contents of tracker file 
-                    thread.start_new_thread( process_data, ("Thread-3", 2, getTrackerString, trackerFile, relevant_path, maxSegmentSize, ip_address, peer_server_port) )
-                except:
-                    print "Error: unable to start thread - process_data"
+            #print " To be downloaded List in : ", trackerFile
+            #downloadedFiles.append(trackerFile)
+            #get the tracker file for the this file
+            #params = urllib.urlencode({'command':'get','filenametrack':trackerFile})
+            params = "GET command=get"+"&filenametrack="+trackerFile
+            #uncomment this line to get response from the server
+            getTrackerString = connect_tracker_server(params, socket , 'get',ip_address, tracker_server_port, maxSegmentSize,maxFileSizeFromTrackerServer)
+            
+            #print "GET Tracker File: \n " , getTrackerString, "\n\n"
+            try:
+                #print "END HERE "
+                # try downloading the files as per the tracker file
+                #pass the contents of tracker file 
+                thread.start_new_thread( process_data, ("Thread-3", 2, getTrackerString, trackerFile, relevant_path, maxSegmentSize, ip_address, peer_server_port) )
+            except:
+                print "Error: unable to start thread - process_data"
 
 
 def client_module(socket, config):
@@ -211,7 +211,7 @@ def client_module(socket, config):
     maxSegmentSize = config["maxSegmentSize"]
     maxFileSizeFromTrackerServer = config["maxFileSizeFromTrackerServer"]
     
-    print "Peer 2 : IP ADDRESS: ", ip_address, " PORT: ", PORT
+    print "Peer 1 : IP ADDRESS: ", ip_address, " PORT: ", PORT
 
     # #time.sleep(2)
     # files = glob.glob(relevant_path+("*.temp","*.track"))
