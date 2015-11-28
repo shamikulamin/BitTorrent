@@ -1,4 +1,4 @@
-﻿import httplib
+import httplib
 import urllib
 import time
 import socket
@@ -82,7 +82,10 @@ def process_data(threadName, delay, response, trackerFile, relevant_path, maxSeg
         md5  = getMd5FromTrackerFile(relevant_path + trackerFile)
         #create a temporary file to write the segment one by one
         fileNameTemp = relevant_path + filename + ".temp"
-        #resultFile = open(resultFileName, "wb")
+        
+        resultFile = open(fileNameTemp, "wb")
+        #resultFile.seek(0,2)
+        resultFile.close()
 
         while(checkIfAllSegmentsDownloaded(filename, maxSegmentSize, fileSize) == False):
             time.sleep(2)
@@ -253,7 +256,7 @@ def downloadSegment(threadName, fileNameTemp, server_addr, server_port, segment_
     #print "Peer 2: Received data :" ,"\n" 
     lock.acquire()
     with open(fileNameTemp, 'rb+') as file_to_write:   
-        file_to_write.seek(int(segment_beginaddr)+1,0)
+        file_to_write.seek(int(segment_beginaddr),0)
         while True:
             data = socket1.recv(maxSegmentSize)
             #print data
@@ -263,7 +266,7 @@ def downloadSegment(threadName, fileNameTemp, server_addr, server_port, segment_
             #print data
             file_to_write.write(data)
 
-            with open(relevant_path+fileName+".track", "rb+") as updateTrackerFileWithCurrentSegment:
+            with open(relevant_path+fileName+".track", "ab") as updateTrackerFileWithCurrentSegment:
                 segmentLineStr =str(ip_address)+":"+str(peer_server_port)+":"+segment_beginaddr+":"+segment_endaddr+":"+str(int(time.time()))+"\n"
                 print "Update tracker file with the current segment: \n"
                 print segmentLineStr

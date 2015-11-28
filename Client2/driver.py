@@ -1,4 +1,4 @@
-﻿import thread
+import thread
 import time
 import socket
 import sys
@@ -28,7 +28,7 @@ try:
    thread.start_new_thread( execute_server, ("Thread-1", config) )
    thread.start_new_thread( execute_client, ("Thread-2", config) )
 except:
-   print "Error: unable to start thread"
+   print "Peer 1 - Error: unable to start thread"
 
 while 1:
 	pass

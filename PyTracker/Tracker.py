@@ -23,7 +23,7 @@ def handler(clientsock,addr):
         data = clientsock.recv(BUFF)
         tokens = data.split(' ',1)
         if not data: break
-        print repr(addr) + ' recv:' + repr(data)
+        # print repr(addr) + ' recv:' + repr(data)
        # clientsock.send(response(data))
        # print repr(addr) + ' sent:' + repr(response(data))
         if "GET" == tokens[0]: break # type 'close' on client console to close connection from the server side
