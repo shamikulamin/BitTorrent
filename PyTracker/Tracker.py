@@ -1,5 +1,5 @@
-﻿from socket import *
-import os
+from socket import *
+import os.path
 import glob
 from os import path
 import thread
@@ -23,7 +23,7 @@ def handler(clientsock,addr):
         data = clientsock.recv(BUFF)
         tokens = data.split(' ',1)
         if not data: break
-        # print repr(addr) + ' recv:' + repr(data)
+        #print repr(addr) + ' recv:' + repr(data)
        # clientsock.send(response(data))
        # print repr(addr) + ' sent:' + repr(response(data))
         if "GET" == tokens[0]: break # type 'close' on client console to close connection from the server side
@@ -56,19 +56,20 @@ def handler(clientsock,addr):
         port = keyVal[5].split('=')[1]
         timestamp = keyVal[6].split('=')[1]
         construct=ip+":"+port+":"+sbyte+":"+ebyte+":"+timestamp
-
+        
+        
         with open(basePath+filename,'r')as f:
             lines=[line.strip() for line in f]
 
         #print "Received segment: ", keyVal, "\n" , construct, "\n"
         #print "Current File : ", lines, "\n\n"
         if construct in lines:
-            clientsock.send("200:Update Tracker Successful")   
+            clientsock.send("200:Update Tracker Successful")
         else:
             fo =open(basePath+filename,"a+")
             fo.write(construct+"\n")
             fo.close()
-            clientsock.send("200:Update Tracker Successful")    	   
+            clientsock.send("200:Update Tracker Successful")
         
     elif command.lower()=="list":
 	   for files in os.listdir(basePath):
@@ -77,10 +78,13 @@ def handler(clientsock,addr):
 
     elif command.lower()=="get":
         filename=keyVal[1].split('=')[1]
-        with open(basePath+filename,'r')as f:
-            lines=[line.strip() for line in f]
-            for l in lines:
-                clientsock.send(l+'\n')
+        if os.path.isdir(d):
+            do="nothing"
+        else:
+            with open(basePath+filename,'r')as f:
+                lines=[line.strip() for line in f]
+                for l in lines:
+                    clientsock.send(l+'\n')
     else:
 	   clientsock.send("TRACKER SERVER : Invalid Command")
 	
