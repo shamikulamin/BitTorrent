@@ -33,7 +33,7 @@ def connect_tracker_server(params,socket, command, tracker_server_host, tracker_
            
         
         if command == 'get':
-            print "Peer 3 - GET tracker File :\n" ,data
+            #print "Peer 3 - GET tracker File :\n" ,data
             socket.close()
             return data
 
@@ -82,7 +82,7 @@ def handle_tracker_server(threadname, socket, delay, relevant_path, included_ext
             
             time.sleep(delay)
 
-            print "here I am in Update Tracker "
+            #print "here I am in Update Tracker "
             allowed_extensions = ["track"]
             updateTrackerFilesList = [fn for fn in os.listdir(relevant_path)
             if any(fn.endswith(ext) for ext in allowed_extensions)]
@@ -137,7 +137,7 @@ def connect_peer_server(threadname, relevant_path, downloadedFiles, downloadingF
         
         #print "downloading Files" , downloadingFiles, " toBeDownloadedFileList ", toBeDownloadedFileList
         #if (len(downloadedFiles) < len(toBeDownloadedFileList)):
-        print "Peer 3: All tracker files lists that need to be downloaded: ", toBeDownloadedFileList, "\n\n"
+        #print "Peer 3: All tracker files lists that need to be downloaded: ", toBeDownloadedFileList, "\n\n"
         if len(toBeDownloadedFileList) > 0:
             # last one is always empty
             for index in range(len(toBeDownloadedFileList)-1):

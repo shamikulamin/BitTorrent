@@ -33,7 +33,7 @@ def connect_tracker_server(params,socket, command, tracker_server_host, tracker_
            
         
         if command == 'get':
-            print "Peer 1 - GET tracker File :\n" ,data
+            #print "Peer 1 - GET tracker File :\n" ,data
             socket.close()
             return data
 
@@ -137,7 +137,7 @@ def connect_peer_server(threadname, relevant_path, downloadedFiles, downloadingF
         
         #print "downloading Files" , downloadingFiles, " toBeDownloadedFileList ", toBeDownloadedFileList
         #if (len(downloadedFiles) < len(toBeDownloadedFileList)):
-        print "Peer 1: All tracker files lists that need to be downloaded: ", toBeDownloadedFileList, "\n\n"
+        #print "Peer 1: All tracker files lists that need to be downloaded: ", toBeDownloadedFileList, "\n\n"
         if len(toBeDownloadedFileList) > 0:
             # last one is always empty
             for index in range(len(toBeDownloadedFileList)-1):
