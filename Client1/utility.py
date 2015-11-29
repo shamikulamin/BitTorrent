@@ -1,4 +1,4 @@
-import httplib
+﻿import httplib
 import urllib
 import time
 import socket
@@ -12,6 +12,8 @@ import collections
 
 segmentDict = collections.defaultdict(list)
 lock = threading.Lock()
+openFiles = []
+openFilesIndex = []
 
 def getMd5(fname):
     hash = hashlib.md5()
@@ -148,6 +150,10 @@ def process_data(threadName, delay, response, trackerFile, relevant_path, maxSeg
                     # pass arguments: open filestream, server ip, server port, segment begin, segment end
             #print " All segments are Downloaded: \n"
             md5ForDownloadedFile = getMd5FromTrackerFile(relevant_path+trackerFile)
+            index = openFilesIndex.index(fileNameTemp)
+            print 'CLOSING FILE FOR MD5 CHECK\n'
+            tempFile = openFiles[index]
+            tempFile.close()
             md5ForOriginalFile = getMd5(fileNameTemp)
             #print "Md5 for Original file: ",md5ForDownloadedFile,"\n"
             #print "Md5 for downloaded file: ", md5ForOriginalFile ,"\n"
@@ -263,29 +269,37 @@ def downloadSegment(threadName, fileNameTemp, server_addr, server_port, segment_
     #data = socket1.recv(1024)
     #print "Peer 1: Received data :" ,"\n" 
     lock.acquire()
-    with open(fileNameTemp, 'rb+') as file_to_write:   
-        file_to_write.seek(int(segment_beginaddr),0)
-        while True:
-            data = socket1.recv(maxSegmentSize)
-            #print data
-            if not data:
-                break
+    global file_to_write
+    #with open(fileNameTemp, 'rb+') as file_to_write:   
+    if (fileNameTemp not in openFilesIndex):
+        file_to_write = open(fileNameTemp, 'wb')
+        print 'opening file now\n'
+        openFiles.append(file_to_write)
+        openFilesIndex.append(fileNameTemp)
+    else:
+        index = openFilesIndex.index(fileNameTemp)
+        print 'opening existing file\n'
+        file_to_write = openFiles[index] 
 
-            #print data
-            file_to_write.write(data)
+    file_to_write.seek(int(segment_beginaddr)+1,0)
+    while True:
+        data = socket1.recv(maxSegmentSize)
+        #print data
+        if not data:
+            break
 
-            with open(relevant_path+fileName+".track", "ab") as updateTrackerFileWithCurrentSegment:
-                segmentLineStr =str(ip_address)+":"+str(peer_server_port)+":"+segment_beginaddr+":"+segment_endaddr+":"+str(int(time.time()))+"\n"
-                print "Update tracker file with the current segment: \n"
-                print segmentLineStr
-                updateTrackerFileWithCurrentSegment.write(segmentLineStr)
-            updateTrackerFileWithCurrentSegment.close()
-            #file_to_write.seek(int(segment_beginaddr),1024)
+        #print data
+        file_to_write.write(data)
 
-    file_to_write.close()
+        with open(relevant_path+fileName+".track", "ab") as updateTrackerFileWithCurrentSegment:
+            segmentLineStr =str(ip_address)+":"+str(peer_server_port)+":"+segment_beginaddr+":"+segment_endaddr+":"+str(int(time.time()))+"\n"
+            print "Update tracker file with the current segment: \n"
+            print segmentLineStr
+            updateTrackerFileWithCurrentSegment.write(segmentLineStr)
+        updateTrackerFileWithCurrentSegment.close()
+        #file_to_write.seek(int(segment_beginaddr),1024)
 
-    
-
+    file_to_write.flush()
     lock.release();
     #print 'Download segment Successful from ',segment_beginaddr, " to ", segment_endaddr
 
