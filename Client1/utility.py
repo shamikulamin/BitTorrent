@@ -154,6 +154,8 @@ def process_data(threadName, delay, response, trackerFile, relevant_path, maxSeg
             print 'CLOSING FILE FOR MD5 CHECK\n'
             tempFile = openFiles[index]
             tempFile.close()
+            del openFiles[index]
+            del openFilesIndex[index]
             md5ForOriginalFile = getMd5(fileNameTemp)
             #print "Md5 for Original file: ",md5ForDownloadedFile,"\n"
             #print "Md5 for downloaded file: ", md5ForOriginalFile ,"\n"
