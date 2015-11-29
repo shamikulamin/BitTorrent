@@ -86,6 +86,8 @@ def handle_tracker_server(threadname, socket, delay, relevant_path, included_ext
             allowed_extensions = ["track"]
             updateTrackerFilesList = [fn for fn in os.listdir(relevant_path)
             if any(fn.endswith(ext) for ext in allowed_extensions)]
+
+            updateTrackerFilesList = removeOriginallySharedFiles(relevant_path, updateTrackerFilesList)
             # maintain a local copy and updated tracker copy - once updated to tracker file
             # overwrite the local copy with the updated tracker copy
             #update tracker for all downloaded files
@@ -155,7 +157,7 @@ def connect_peer_server(threadname, relevant_path, downloadedFiles, downloadingF
                         if line not in getTrackerString:
                             getTrackerString += line +"\n"
 
-                print "GET Tracker File: \n " , getTrackerString, "\n\n"
+                print "Peer 2: GET Tracker File: \n " , getTrackerString, "\n\n"
                 try:
                     #print "END HERE "
                     # try downloading the files as per the tracker file

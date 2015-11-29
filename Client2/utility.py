@@ -10,6 +10,7 @@ import threading
 import os
 import collections
 import glob
+import shutil
 
 segmentDict = collections.defaultdict(list)
 lock = threading.Lock()
@@ -80,7 +81,7 @@ def process_data(threadName, delay, response, trackerFile, relevant_path, maxSeg
         #check if the entire file for current tracker file is already downloaded
 
         isFileAlreadyDownloaded = checkIfFileisDownloaded(relevant_path, trackerFile)
-        print " Peer 2 : Does this file needed to be downloaded ? ", isFileAlreadyDownloaded,"\n\n"
+
         if isFileAlreadyDownloaded == False:
             #get latest updated tracker file
             listOfSegmentsInTrackerFile = parseTrackerFile(relevant_path + trackerFile)
@@ -153,28 +154,34 @@ def process_data(threadName, delay, response, trackerFile, relevant_path, maxSeg
                     # new download segment executes as thread, downloads segment indicated to stream, updates local tracker #
                     # pass arguments: open filestream, server ip, server port, segment begin, segment end
             
-            print " Peer 2 : All segments are Downloaded: ", filename,"\n\n"
-            mergeAllSegments(relevant_path, filename, fileNameTemp)
+            if not os.path.exists(relevant_path+"temp/"):
+                print " Peer 2: Complete file for this tracker file Downloaded - ", trackerFile, " \n\n" 
 
-            md5ForDownloadedFile = getMd5FromTrackerFile(relevant_path+trackerFile)
-            #index = openFilesIndex.index(fileNameTemp)
-            #print 'Peer 2: CLOSING FILE FOR MD5 CHECK\n'
-            # tempFile = openFiles[index]
-            # tempFile.close()
-            # del openFiles[index]
-            # del openFilesIndex[index]
-            md5ForOriginalFile = getMd5(fileNameTemp)
-            #print "Md5 for Original file: ",md5ForDownloadedFile,"\n"
-            #print "Md5 for downloaded file: ", md5ForOriginalFile ,"\n"
-            #print "MD5 same: str(md5ForDownloadedFile) == str(md5ForOriginalFile)", md5ForDownloadedFile.strip() == md5ForOriginalFile.strip()
-            if md5ForDownloadedFile.strip() == md5ForOriginalFile.strip():
-                os.rename(fileNameTemp, relevant_path+filename)
-                print "Peer 2 - File successfully Downloaded. Not Corrupted \n\n"
+            else:
+                print " Peer 2 : All segments are Downloaded: ", filename,"\n\n"
+                mergeAllSegments(relevant_path, filename, fileNameTemp)
 
-            time.sleep(2)
-           
+                md5ForDownloadedFile = getMd5FromTrackerFile(relevant_path+trackerFile)
+                #index = openFilesIndex.index(fileNameTemp)
+                #print 'Peer 2: CLOSING FILE FOR MD5 CHECK\n'
+                # tempFile = openFiles[index]
+                # tempFile.close()
+                # del openFiles[index]
+                # del openFilesIndex[index]
+                md5ForOriginalFile = getMd5(fileNameTemp)
+                #print "Md5 for Original file: ",md5ForDownloadedFile,"\n"
+                #print "Md5 for downloaded file: ", md5ForOriginalFile ,"\n"
+                #print "MD5 same: str(md5ForDownloadedFile) == str(md5ForOriginalFile)", md5ForDownloadedFile.strip() == md5ForOriginalFile.strip()
+                if md5ForDownloadedFile.strip() == md5ForOriginalFile.strip():
+                    #shutil.rmtree(relevant_path+"temp/")
+                    os.rename(fileNameTemp, relevant_path+filename)
+                    print "Peer 2 - File successfully Downloaded. Not Corrupted \n\n"
+
+                #print "DONE\n\n"
+                
+                #check if the downloaded file is CORRECTLY downloaded
         else:
-            print "Client 1 : Corresponding file for current tracker file is already downloaded. ", trackerFile , "\n\n"
+            print "Peer 2 : Corresponding file for current tracker file is already downloaded. ", trackerFile , "\n\n"
         
 
 def createTrackerFile(filename, description, ip_address, PORT):
@@ -430,14 +437,14 @@ def mergeAllSegments(relevant_path, fileName, fileNameTemp):
             if any(fn.endswith(ext) for ext in all_extensions)]
 
     fileNameList = fileName.split(".")
-    print "All Files: ", fileName, " ",allFilesList, "\n\n"
+    #print "All Files: ", fileName, " ",allFilesList, "\n\n"
 
     #get all segments for the current file
     for currentFile in allFilesList:
         if currentFile.startswith(fileNameList[0]) == True:
             selectedFiles.append(relevant_path + "temp/"+ currentFile)
 
-    print selectedFiles
+    #print selectedFiles
 
     with open(fileNameTemp, "wb") as outfile:
         for f in selectedFiles:

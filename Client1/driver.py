@@ -3,6 +3,8 @@ import time
 import socket
 import sys
 import time
+import glob
+import os
 
 
 from client import client_module
@@ -16,8 +18,16 @@ if __name__ == "__main__":
     
 
 def execute_client( threadName, config):
-	#time.sleep(2)
-	client_module(socket, config)
+  relevant_path = config["pathToSharedFolder"]
+  delete_extensions = ['track','temp']
+    
+  deleteFilesList = [fn for fn in os.listdir(relevant_path)
+            if any(fn.endswith(ext) for ext in delete_extensions)]
+  
+  for f in deleteFilesList:
+    os.remove(relevant_path + f)
+
+  client_module(socket, config)
 
 def execute_server(threadName, config):
 	server_module(socket, config)

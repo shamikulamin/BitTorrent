@@ -9,7 +9,7 @@ import time
 import glob
 import os
 
-from utility import getMd5, getFileSize, process_data, createTrackerFile, updateTrackerFile, parseTrackerFile, removeTrackerFilesForExistingFiles
+from utility import getMd5, getFileSize, process_data, createTrackerFile, updateTrackerFile, parseTrackerFile, removeTrackerFilesForExistingFiles, removeOriginallySharedFiles
 
 
 def connect_tracker_server(params,socket, command, tracker_server_host, tracker_server_port, maxSegmentSize, maxFileSizeFromTrackerServer):
@@ -86,6 +86,8 @@ def handle_tracker_server(threadname, socket, delay, relevant_path, included_ext
             allowed_extensions = ["track"]
             updateTrackerFilesList = [fn for fn in os.listdir(relevant_path)
             if any(fn.endswith(ext) for ext in allowed_extensions)]
+
+            updateTrackerFilesList = removeOriginallySharedFiles(relevant_path, updateTrackerFilesList)
             # maintain a local copy and updated tracker copy - once updated to tracker file
             # overwrite the local copy with the updated tracker copy
             #update tracker for all downloaded files
@@ -131,21 +133,31 @@ def connect_peer_server(threadname, relevant_path, downloadedFiles, downloadingF
         #Below list of files should be downloaded at this peer
         allTrackerFilesList = listString.split("\n")
         #print " All Tracker Files Obtained: ", allTrackerFilesList
-        toBeDownloadedFileList = removeTrackerFilesForExistingFiles(relevant_path,allTrackerFilesList)
+        toBeDownloadedFileList = removeOriginallySharedFiles(relevant_path,allTrackerFilesList)
         
         #print "downloading Files" , downloadingFiles, " toBeDownloadedFileList ", toBeDownloadedFileList
-        if (len(downloadedFiles) < len(toBeDownloadedFileList)):
-            for trackerFile in toBeDownloadedFileList:
-
+        #if (len(downloadedFiles) < len(toBeDownloadedFileList)):
+        print "Peer 3: All tracker files lists that need to be downloaded: ", toBeDownloadedFileList, "\n\n"
+        if len(toBeDownloadedFileList) > 0:
+            # last one is always empty
+            for index in range(len(toBeDownloadedFileList)-1):
+                trackerFile = toBeDownloadedFileList[index]
                 #print " To be downloaded List in : ", trackerFile
-                downloadedFiles.append(trackerFile)
+                #downloadedFiles.append(trackerFile)
                 #get the tracker file for the this file
                 #params = urllib.urlencode({'command':'get','filenametrack':trackerFile})
                 params = "GET command=get"+"&filenametrack="+trackerFile
                 #uncomment this line to get response from the server
                 getTrackerString = connect_tracker_server(params, socket , 'get',ip_address, tracker_server_port, maxSegmentSize,maxFileSizeFromTrackerServer)
                 
-                #print "GET Tracker File: \n " , getTrackerString, "\n\n"
+                if os.path.isfile(relevant_path + trackerFile) == True: 
+                    lines = [line.rstrip('\n') for line in open(relevant_path + trackerFile).readlines()]
+
+                    for line in lines:
+                        if line not in getTrackerString:
+                            getTrackerString += line +"\n"
+
+                print "Peer 3 : GET Tracker File: \n " , getTrackerString, "\n\n"
                 try:
                     #print "END HERE "
                     # try downloading the files as per the tracker file
@@ -213,6 +225,9 @@ def client_module(socket, config):
     
     print "Peer 3 : IP ADDRESS: ", ip_address, " PORT: ", PORT
 
+    # files = glob.glob(relevant_path+'*')
+    # for f in files:
+    #     os.remove(f)
     # #time.sleep(2)
     # files = glob.glob(relevant_path+("*.temp","*.track"))
     # for f in toBeRemovedFilesList:
