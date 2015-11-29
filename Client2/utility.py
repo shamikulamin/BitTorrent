@@ -9,6 +9,7 @@ import thread
 import threading
 import os
 import collections
+import glob
 
 segmentDict = collections.defaultdict(list)
 lock = threading.Lock()
@@ -79,7 +80,7 @@ def process_data(threadName, delay, response, trackerFile, relevant_path, maxSeg
         #check if the entire file for current tracker file is already downloaded
 
         isFileAlreadyDownloaded = checkIfFileisDownloaded(relevant_path, trackerFile)
-
+        print " Peer 2 : Does this file needed to be downloaded ? ", isFileAlreadyDownloaded,"\n\n"
         if isFileAlreadyDownloaded == False:
             #get latest updated tracker file
             listOfSegmentsInTrackerFile = parseTrackerFile(relevant_path + trackerFile)
@@ -144,7 +145,7 @@ def process_data(threadName, delay, response, trackerFile, relevant_path, maxSeg
                     try:
                         #print "END HERE "
                         if isSegmentNeededToBeDownloaded == True:
-                            thread.start_new_thread( downloadSegment, ("Thread-4", fileNameTemp, inf[0], inf[1], inf[2], inf[3], filename, maxSegmentSize,ip_address,peer_server_port, relevant_path));
+                            thread.start_new_thread( downloadSegmentInTempFolder, ("Thread-4", fileNameTemp, inf[0], inf[1], inf[2], inf[3], filename, maxSegmentSize,ip_address,peer_server_port, relevant_path));
                         #print "data successfully written to file"
                     except:
                         print "Error: unable to start thread - process_data"
@@ -152,14 +153,16 @@ def process_data(threadName, delay, response, trackerFile, relevant_path, maxSeg
                     # new download segment executes as thread, downloads segment indicated to stream, updates local tracker #
                     # pass arguments: open filestream, server ip, server port, segment begin, segment end
             
-            print " Peer 2 : All segments are Downloaded: \n"
+            print " Peer 2 : All segments are Downloaded: ", filename,"\n\n"
+            mergeAllSegments(relevant_path, filename, fileNameTemp)
+
             md5ForDownloadedFile = getMd5FromTrackerFile(relevant_path+trackerFile)
-            index = openFilesIndex.index(fileNameTemp)
-            print 'Peer 2: CLOSING FILE FOR MD5 CHECK\n'
-            tempFile = openFiles[index]
-            tempFile.close()
-            del openFiles[index]
-            del openFilesIndex[index]
+            #index = openFilesIndex.index(fileNameTemp)
+            #print 'Peer 2: CLOSING FILE FOR MD5 CHECK\n'
+            # tempFile = openFiles[index]
+            # tempFile.close()
+            # del openFiles[index]
+            # del openFilesIndex[index]
             md5ForOriginalFile = getMd5(fileNameTemp)
             #print "Md5 for Original file: ",md5ForDownloadedFile,"\n"
             #print "Md5 for downloaded file: ", md5ForOriginalFile ,"\n"
@@ -168,9 +171,8 @@ def process_data(threadName, delay, response, trackerFile, relevant_path, maxSeg
                 os.rename(fileNameTemp, relevant_path+filename)
                 print "Peer 2 - File successfully Downloaded. Not Corrupted \n\n"
 
-            #print "DONE\n\n"
-            
-            #check if the downloaded file is CORRECTLY downloaded
+            time.sleep(2)
+           
         else:
             print "Client 1 : Corresponding file for current tracker file is already downloaded. ", trackerFile , "\n\n"
         
@@ -276,12 +278,48 @@ def downloadSegment(threadName, fileNameTemp, server_addr, server_port, segment_
     file_to_write.flush()
     updateDownloadedSegmentList(fileName, segment_beginaddr)
     lock.release();
-    print 'Client 1 : Download segment Successful from ',segment_beginaddr, " to ", segment_endaddr
+    print 'Client 1 : Download segment Successful from ',segment_beginaddr, " to ", segment_endaddr,"\n\n"
 
     socket1.close()
    
    
+def downloadSegmentInTempFolder(threadName, fileNameTemp, server_addr, server_port, segment_beginaddr, segment_endaddr, fileName, maxSegmentSize,ip_address,peer_server_port, relevant_path):
+    #print "Download segment: ", server_addr, server_port, segment_beginaddr, "  ",segment_endaddr,"\n\n"
+    downloadSegmentStr = "download," + fileName + ","+segment_beginaddr+"," + segment_endaddr
+    #print "Server Address : ", server_addr, " Server Port: ", server_port   
+    socket1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    socket1.connect((server_addr, int(server_port)))
+    socket1.send(downloadSegmentStr)
+    #data = socket1.recv(1024)
+    print "Peer 2: Received data :" ,"\n" 
+    lock.acquire()
+    if not os.path.exists(relevant_path+"temp/"):
+        os.makedirs(relevant_path+"temp/")
 
+    fileNames = fileName.split(".")
+    with open(relevant_path+"temp/"+fileNames[0]+"_"+segment_beginaddr+"."+fileNames[1],"w") as file_to_write:   
+        while True:
+            data = socket1.recv(maxSegmentSize)
+            #print data
+            if not data:
+                break
+
+            #print data
+            file_to_write.write(data)
+
+            with open(relevant_path+fileName+".track", "ab") as updateTrackerFileWithCurrentSegment:
+                segmentLineStr =str(ip_address)+":"+str(peer_server_port)+":"+segment_beginaddr+":"+segment_endaddr+":"+str(int(time.time()))+"\n"
+                print "Peer 2: Update tracker file with the current segment: \n"
+                print segmentLineStr
+                updateTrackerFileWithCurrentSegment.write(segmentLineStr)
+            updateTrackerFileWithCurrentSegment.close()
+        
+    file_to_write.close()
+    updateDownloadedSegmentList(fileName, segment_beginaddr)
+    lock.release();
+
+    print 'Client 1 : Download segment Successful from ',segment_beginaddr, " to ", segment_endaddr,"\n\n"
+    socket1.close()
 
 
 def updateDownloadedSegmentList(filename, s_byte):
@@ -384,3 +422,28 @@ def removeOriginallySharedFiles(relevant_path, allTrackerFilesList):
    
     return toBeDownloadedList
 
+def mergeAllSegments(relevant_path, fileName, fileNameTemp):
+    selectedFiles = []
+    all_extensions = ['jpg', 'txt', 'png', 'gif','png','pdf']
+    
+    allFilesList = [fn for fn in os.listdir(relevant_path+"temp/")
+            if any(fn.endswith(ext) for ext in all_extensions)]
+
+    fileNameList = fileName.split(".")
+    print "All Files: ", fileName, " ",allFilesList, "\n\n"
+
+    #get all segments for the current file
+    for currentFile in allFilesList:
+        if currentFile.startswith(fileNameList[0]) == True:
+            selectedFiles.append(relevant_path + "temp/"+ currentFile)
+
+    print selectedFiles
+
+    with open(fileNameTemp, "wb") as outfile:
+        for f in selectedFiles:
+            with open(f, "rb") as infile:
+                outfile.write(infile.read())  
+
+    #return fileNameTemp  
+
+   

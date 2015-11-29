@@ -223,6 +223,9 @@ def client_module(socket, config):
     
     print "Peer 1 : IP ADDRESS: ", ip_address, " PORT: ", PORT
 
+    # files = glob.glob(relevant_path+'*')
+    # for f in files:
+    #     os.remove(f)
     # #time.sleep(2)
     # files = glob.glob(relevant_path+("*.temp","*.track"))
     # for f in toBeRemovedFilesList:
