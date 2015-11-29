@@ -115,7 +115,7 @@ def process_data(threadName, delay, response, trackerFile, relevant_path, maxSeg
 
                     print "Peer 1: Try downloading segment from " , inf[2], " to ", inf[3], "\n\n"
                     if int(inf[3]) - int(inf[2]) == int(fileSize):
-                        print "Entire file is present with the peer ", fileSize
+                        print "Peer 1: Entire file is present with the peer ", "\n"
                         #check if any segment in the entire file is pending to be downloaded in increasing order
                         startByte = int(inf[2])
                         endByte = startByte + int(maxSegmentSize)
@@ -138,7 +138,7 @@ def process_data(threadName, delay, response, trackerFile, relevant_path, maxSeg
                                 endByte = int(fileSize)
                     else:
                         isSegmentNeededToBeDownloaded = checkIfSegmentIsAlreadyDownloaded(filename, inf[2])
-                    #print " Does this segment need to be downloaded ? ", isSegmentNeededToBeDownloaded
+                    print " Peer 1: Does this segment need to be downloaded ? ", inf[2], " ", inf[3], isSegmentNeededToBeDownloaded, "\n\n"
                     #downloadSegment_old(string)
                     
                     try:
@@ -151,10 +151,11 @@ def process_data(threadName, delay, response, trackerFile, relevant_path, maxSeg
                     #resultFile.seek(inf[2])
                     # new download segment executes as thread, downloads segment indicated to stream, updates local tracker #
                     # pass arguments: open filestream, server ip, server port, segment begin, segment end
-            #print " All segments are Downloaded: \n"
+            
+            print " Peer 1 : All segments are Downloaded: \n"
             md5ForDownloadedFile = getMd5FromTrackerFile(relevant_path+trackerFile)
             index = openFilesIndex.index(fileNameTemp)
-            print 'CLOSING FILE FOR MD5 CHECK\n'
+            print 'Peer 1: CLOSING FILE FOR MD5 CHECK\n'
             tempFile = openFiles[index]
             tempFile.close()
             del openFiles[index]
@@ -165,17 +166,14 @@ def process_data(threadName, delay, response, trackerFile, relevant_path, maxSeg
             #print "MD5 same: str(md5ForDownloadedFile) == str(md5ForOriginalFile)", md5ForDownloadedFile.strip() == md5ForOriginalFile.strip()
             if md5ForDownloadedFile.strip() == md5ForOriginalFile.strip():
                 os.rename(fileNameTemp, relevant_path+filename)
-                print "Client 1 - File successfully Downloaded. Not Corrupted \n\n"
+                print "Peer 1 - File successfully Downloaded. Not Corrupted \n\n"
 
             #print "DONE\n\n"
             
             #check if the downloaded file is CORRECTLY downloaded
         else:
-            print "Corresponding file for current tracker file is already downloaded. ", trackerFile , "\n\n"
+            print "Client 1 : Corresponding file for current tracker file is already downloaded. ", trackerFile , "\n\n"
         
-
-
-
 
 def createTrackerFile(filename, description, ip_address, PORT):
     #print filename
@@ -201,12 +199,7 @@ def createTrackerFile(filename, description, ip_address, PORT):
 def updateTrackerFile(filename, segmentLine):
     fileNameList = filename.split("/")
     actualFileName = fileNameList[len(fileNameList) -1]
-    
-    # listOfSegments = parseTrackerFile(filename)
-    # print " Update Tracker File : List of segments: \n ", listOfSegments
-    # for index in range(len(listOfSegments) -1):
-    #     segmentLine = listOfSegments[index].split(":")
-    #     print segmentLine
+   
 
     string = "Peer 1: "+" Updatetracker "+ " Filename: "+ actualFileName+ " start byte "+ segmentLine[2]+" End byte "+ segmentLine[3]+" ip-address "+ segmentLine[0]+" port "+segmentLine[1]
     print string ,"\n\n"
@@ -217,9 +210,7 @@ def updateTrackerFile(filename, segmentLine):
 def parseTrackerFile(trackerFilename):
     
     listOfSegments = []
-    #for line in reversed(open(trackerFilename).readlines()):
-        #print "Line is: " , line.rstrip()
-
+   
     #read file from the end of tracker file
     lines = [line.rstrip('\n') for line in reversed(open(trackerFilename).readlines())]
     #print "Total lines: " , len(lines) 
@@ -242,27 +233,6 @@ def parseTrackerFile(trackerFilename):
     #print string
     return listOfSegments
 
-def downloadSegment_old(string):
-    socket1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    
-    inf = string.split(":")
-    socket1.connect((inf[1], int(inf[2])))
-    socket1.send("download " + inf[0])
-    
-    with open(inf[0]+".temp", 'wb') as file_to_write:
-        while True:
-            data = socket1.recv(1024)
-            # print data
-            if not data:
-                break
-            # print data
-            file_to_write.write(data)
-    file_to_write.close()
-
-    #os.rename(file_to_write, file_to_write.replace(".temp",""))
-    print 'Peer 1 - Download file Successful'
-    socket1.close()
-    return 
 
 def downloadSegment(threadName, fileNameTemp, server_addr, server_port, segment_beginaddr, segment_endaddr, fileName, maxSegmentSize,ip_address,peer_server_port, relevant_path):
     #print "Download segment: ", server_addr, server_port, segment_beginaddr, "  ",segment_endaddr,"\n\n"
@@ -272,7 +242,7 @@ def downloadSegment(threadName, fileNameTemp, server_addr, server_port, segment_
     socket1.connect((server_addr, int(server_port)))
     socket1.send(downloadSegmentStr)
     #data = socket1.recv(1024)
-    #print "Peer 1: Received data :" ,"\n" 
+    print "Peer 1: Received data :" ,"\n" 
     lock.acquire()
     global file_to_write
     #with open(fileNameTemp, 'rb+') as file_to_write:   
@@ -298,23 +268,19 @@ def downloadSegment(threadName, fileNameTemp, server_addr, server_port, segment_
 
         with open(relevant_path+fileName+".track", "ab") as updateTrackerFileWithCurrentSegment:
             segmentLineStr =str(ip_address)+":"+str(peer_server_port)+":"+segment_beginaddr+":"+segment_endaddr+":"+str(int(time.time()))+"\n"
-            print "Update tracker file with the current segment: \n"
+            print "Peer 1: Update tracker file with the current segment: \n"
             print segmentLineStr
             updateTrackerFileWithCurrentSegment.write(segmentLineStr)
         updateTrackerFileWithCurrentSegment.close()
-        #file_to_write.seek(int(segment_beginaddr),1024)
-
+        
     file_to_write.flush()
+    updateDownloadedSegmentList(fileName, segment_beginaddr)
     lock.release();
-    #print 'Download segment Successful from ',segment_beginaddr, " to ", segment_endaddr
+    print 'Client 1 : Download segment Successful from ',segment_beginaddr, " to ", segment_endaddr
 
     socket1.close()
-    #resultFile.seek(int(segment_beginaddr))
-    #print "write: ", data, " into : " , fileName
-    #print " The segment list for file : " , fileName, " is: ", segmentDict.get(fileName," Not")
-    #resultFile.write(data)
-    updateDownloadedSegmentList(fileName, segment_beginaddr)
-    #socket1.close()
+   
+   
 
 
 
@@ -331,8 +297,6 @@ def checkIfSegmentIsAlreadyDownloaded(filename, s_byte):
     #print "File name: ", filename, " s_byte ", s_byte
     #print " The segment Dict is : " , segmentDict.get(filename,"None")
     segmentStr = segmentDict.get(filename,"None")
-
-
     #print " The segementStr is : ", segmentStr, " Current start byte: ", s_byte
     if s_byte in segmentStr:
         return False
@@ -380,10 +344,10 @@ def removeTrackerFilesForExistingFiles(relevant_path, allTrackerFilesList):
             
 
 
-    # if(len(toBeDownloadedList)>0):
-    #     print " Peer 1 : To be downloaded List in : ", toBeDownloadedList
-    # else:
-    #     print "Peer 1 : No new files that need to be downloaded. "
+    if(len(toBeDownloadedList)>0):
+        print " Peer 1 : To be downloaded List in : ", toBeDownloadedList
+    else:
+        print "Peer 1 : No new files that need to be downloaded. "
     return toBeDownloadedList
 
 
