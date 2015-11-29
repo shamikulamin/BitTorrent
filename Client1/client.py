@@ -9,7 +9,7 @@ import time
 import glob
 import os
 
-from utility import getMd5, getFileSize, process_data, createTrackerFile, updateTrackerFile, parseTrackerFile, removeTrackerFilesForExistingFiles
+from utility import getMd5, getFileSize, process_data, createTrackerFile, updateTrackerFile, parseTrackerFile, removeTrackerFilesForExistingFiles, removeOriginallySharedFiles
 
 
 def connect_tracker_server(params,socket, command, tracker_server_host, tracker_server_port, maxSegmentSize, maxFileSizeFromTrackerServer):
@@ -131,15 +131,15 @@ def connect_peer_server(threadname, relevant_path, downloadedFiles, downloadingF
         #Below list of files should be downloaded at this peer
         allTrackerFilesList = listString.split("\n")
         #print " All Tracker Files Obtained: ", allTrackerFilesList
-        #toBeDownloadedFileList = removeTrackerFilesForExistingFiles(relevant_path,allTrackerFilesList)
+        toBeDownloadedFileList = removeOriginallySharedFiles(relevant_path,allTrackerFilesList)
         
         #print "downloading Files" , downloadingFiles, " toBeDownloadedFileList ", toBeDownloadedFileList
         #if (len(downloadedFiles) < len(toBeDownloadedFileList)):
-        print "All tracker files list: ", allTrackerFilesList, "\n\n"
-        if len(allTrackerFilesList) > 0:
+        print "Peer 1: All tracker files lists that need to be downloaded: ", toBeDownloadedFileList, "\n\n"
+        if len(toBeDownloadedFileList) > 0:
             # last one is always empty
-            for index in range(len(allTrackerFilesList)-1):
-                trackerFile = allTrackerFilesList[index]
+            for index in range(len(toBeDownloadedFileList)-1):
+                trackerFile = toBeDownloadedFileList[index]
                 #print " To be downloaded List in : ", trackerFile
                 #downloadedFiles.append(trackerFile)
                 #get the tracker file for the this file
@@ -148,7 +148,14 @@ def connect_peer_server(threadname, relevant_path, downloadedFiles, downloadingF
                 #uncomment this line to get response from the server
                 getTrackerString = connect_tracker_server(params, socket , 'get',ip_address, tracker_server_port, maxSegmentSize,maxFileSizeFromTrackerServer)
                 
-                #print "GET Tracker File: \n " , getTrackerString, "\n\n"
+                if os.path.isfile(relevant_path + trackerFile) == True: 
+                    lines = [line.rstrip('\n') for line in open(relevant_path + trackerFile).readlines()]
+
+                    for line in lines:
+                        if line not in getTrackerString:
+                            getTrackerString += line +"\n"
+
+                print "GET Tracker File: \n " , getTrackerString, "\n\n"
                 try:
                     #print "END HERE "
                     # try downloading the files as per the tracker file
