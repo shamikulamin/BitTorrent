@@ -100,7 +100,7 @@ def process_data(threadName, delay, response, trackerFile, relevant_path, maxSeg
             #get latest updated tracker file
             listOfSegmentsInTrackerFile = parseTrackerFile(relevant_path + trackerFile)
 
-            #print "Peer 9: ", listOfSegmentsInTrackerFile,"\n\n"
+            #print "Peer 1: ", listOfSegmentsInTrackerFile,"\n\n"
             # get filename
             filename = listOfSegmentsInTrackerFile[len(listOfSegmentsInTrackerFile) - 1]
 
@@ -117,7 +117,7 @@ def process_data(threadName, delay, response, trackerFile, relevant_path, maxSeg
                 time.sleep(2)
                 #get latest updated tracker file
                 listOfSegmentsInTrackerFile = parseTrackerFile(relevant_path + trackerFile)
-                #print " Peer 9: List of segments in tracker file: ",listOfSegmentsInTrackerFile,"\n\n"
+                #print " Peer 1: List of segments in tracker file: ",listOfSegmentsInTrackerFile,"\n\n"
                 # get filename
                 filename = listOfSegmentsInTrackerFile[len(listOfSegmentsInTrackerFile) - 1]
 
@@ -125,14 +125,14 @@ def process_data(threadName, delay, response, trackerFile, relevant_path, maxSeg
                 for index in range(len(listOfSegmentsInTrackerFile) -1):
                     time.sleep(2)
                     segmentLine = listOfSegmentsInTrackerFile[index]
-                    #print "Peer 9: Try downloading current segment : from " ,  , "\n\n"
+                    #print "Peer 1: Try downloading current segment : from " ,  , "\n\n"
 
                     # calculate which segements to download, then download them
                     inf = segmentLine.split(":")
 
-                    print "Peer 9: Try downloading segment from " , inf[2], " to ", inf[3], "\n\n"
+                    print "Peer 1: Try downloading segment from " , inf[2], " to ", inf[3], "\n\n"
                     if int(inf[3]) - int(inf[2]) == int(fileSize):
-                        #print "Peer 9: Entire file is present with the peer ", "\n"
+                        #print "Peer 1: Entire file is present with the peer ", "\n"
                         #check if any segment in the entire file is pending to be downloaded in increasing order
                         startByte = int(inf[2])
                         endByte = startByte + int(maxSegmentSize)
@@ -155,7 +155,7 @@ def process_data(threadName, delay, response, trackerFile, relevant_path, maxSeg
                                 endByte = int(fileSize)
                     else:
                         isSegmentNeededToBeDownloaded = checkIfSegmentIsAlreadyDownloaded(filename, inf[2])
-                    #print " Peer 9: Does this segment need to be downloaded ? ", inf[2], " ", inf[3], isSegmentNeededToBeDownloaded, "\n\n"
+                    #print " Peer 1: Does this segment need to be downloaded ? ", inf[2], " ", inf[3], isSegmentNeededToBeDownloaded, "\n\n"
                     #downloadSegment_old(string)
                     
                     try:
@@ -170,27 +170,19 @@ def process_data(threadName, delay, response, trackerFile, relevant_path, maxSeg
                     # pass arguments: open filestream, server ip, server port, segment begin, segment end
             
             if not os.path.exists(relevant_path+"temp/"):
-                print " Peer 9: Complete file for this tracker file Downloaded - ", trackerFile, " \n\n" 
+                print " Peer 1: Complete file for this tracker file Downloaded - ", trackerFile, " \n\n" 
 
             else:
-                #print " Peer 9 : All segments are Downloaded: ", filename,"\n\n"
-                mergeAllSegments(relevant_path, filename, fileNameTemp)
+                #print " Peer 1 : All segments are Downloaded: ", filename,"\n\n"
+                fileNameTemp = mergeAllSegments(relevant_path, filename, fileNameTemp)
 
                 md5ForDownloadedFile = getMd5FromTrackerFile(relevant_path+trackerFile)
-                #index = openFilesIndex.index(fileNameTemp)
-                #print 'Peer 9: CLOSING FILE FOR MD5 CHECK\n'
-                # tempFile = openFiles[index]
-                # tempFile.close()
-                # del openFiles[index]
-                # del openFilesIndex[index]
                 md5ForOriginalFile = getMd5(fileNameTemp)
-                #print "Md5 for Original file: ",md5ForDownloadedFile,"\n"
-                #print "Md5 for downloaded file: ", md5ForOriginalFile ,"\n"
-                #print "MD5 same: str(md5ForDownloadedFile) == str(md5ForOriginalFile)", md5ForDownloadedFile.strip() == md5ForOriginalFile.strip()
+                
                 if md5ForDownloadedFile.strip() == md5ForOriginalFile.strip():
                     #shutil.rmtree(relevant_path+"temp/")
                     os.rename(fileNameTemp, relevant_path+filename)
-                    print "Peer 9 - File successfully Downloaded. Not Corrupted \n\n"
+                    print "Peer 1 - File successfully Downloaded. Not Corrupted \n\n"
 
                 #print "DONE\n\n"
                 
@@ -210,7 +202,7 @@ def createTrackerFile(filename, description, ip_address, PORT):
 
     #create the local copy of the tracker file
     #file = open("tracker"+str(timestamp)+".txt", "w")
-    string = "Peer 9: "+ "Create Tracker" + " Filename: "+actualFileName+" Filesize: "+ str(filesize)+" Description:"+description+" MD5:"+md5+" "+str(ip_address)+":"+str(PORT)+":0:"+str(filesize)+":"+str(timestamp)
+    string = "Peer 1: "+ "Create Tracker" + " Filename: "+actualFileName+" Filesize: "+ str(filesize)+" Description:"+description+" MD5:"+md5+" "+str(ip_address)+":"+str(PORT)+":0:"+str(filesize)+":"+str(timestamp)
     print string, "\n\n"
     params = "GET command=createTracker&filename="+actualFileName+"&filesize="+str(filesize)+"&description="+description+"&md5="+md5+"&ip="+str(ip_address)+"&port="+str(PORT)+"&timestamp="+str(timestamp)
     #file.write(string)
@@ -225,7 +217,7 @@ def updateTrackerFile(filename, segmentLine):
     actualFileName = fileNameList[len(fileNameList) -1]
    
 
-    string = "Peer 9: "+" Updatetracker "+ " Filename: "+ actualFileName+ " start byte "+ segmentLine[2]+" End byte "+ segmentLine[3]+" ip-address "+ segmentLine[0]+" port "+segmentLine[1]
+    string = "Peer 1: "+" Updatetracker "+ " Filename: "+ actualFileName+ " start byte "+ segmentLine[2]+" End byte "+ segmentLine[3]+" ip-address "+ segmentLine[0]+" port "+segmentLine[1]
     print string ,"\n\n"
     params = "GET command=updateTracker&filename="+actualFileName+"&s_byte="+segmentLine[2]+"&e_byte="+segmentLine[3]+"&ip="+segmentLine[0]+"&port="+segmentLine[1]+"&timestamp="+segmentLine[4]
     
@@ -266,7 +258,7 @@ def downloadSegment(threadName, fileNameTemp, server_addr, server_port, segment_
     socket1.connect((server_addr, int(server_port)))
     socket1.send(downloadSegmentStr)
     #data = socket1.recv(1024)
-    print "Peer 9: Received data :" ,"\n" 
+    print "Peer 1: Received data :" ,"\n" 
     lock.acquire()
     global file_to_write
     #with open(fileNameTemp, 'rb+') as file_to_write:   
@@ -292,7 +284,7 @@ def downloadSegment(threadName, fileNameTemp, server_addr, server_port, segment_
 
         with open(relevant_path+fileName+".track", "ab") as updateTrackerFileWithCurrentSegment:
             segmentLineStr =str(ip_address)+":"+str(peer_server_port)+":"+segment_beginaddr+":"+segment_endaddr+":"+str(int(time.time()))+"\n"
-            #print "Peer 9: Update tracker file with the current segment: \n"
+            #print "Peer 1: Update tracker file with the current segment: \n"
             print segmentLineStr
             updateTrackerFileWithCurrentSegment.write(segmentLineStr)
         updateTrackerFileWithCurrentSegment.close()
@@ -313,7 +305,7 @@ def downloadSegmentInTempFolder(threadName, fileNameTemp, server_addr, server_po
     socket1.connect((server_addr, int(server_port)))
     socket1.send(downloadSegmentStr)
     #data = socket1.recv(1024)
-    #print "Peer 9: Received data :" ,"\n" 
+    #print "Peer 1: Received data :" ,"\n" 
     lock.acquire()
     if not os.path.exists(relevant_path+"temp/"):
         os.makedirs(relevant_path+"temp/")
@@ -331,7 +323,7 @@ def downloadSegmentInTempFolder(threadName, fileNameTemp, server_addr, server_po
 
             with open(relevant_path+fileName+".track", "ab") as updateTrackerFileWithCurrentSegment:
                 segmentLineStr =str(ip_address)+":"+str(peer_server_port)+":"+segment_beginaddr+":"+segment_endaddr+":"+str(int(time.time()))+"\n"
-                #print "Peer 9: Update tracker file with the current segment: \n"
+                #print "Peer 1: Update tracker file with the current segment: \n"
                 print segmentLineStr
                 updateTrackerFileWithCurrentSegment.write(segmentLineStr)
             updateTrackerFileWithCurrentSegment.close()
@@ -405,9 +397,9 @@ def removeTrackerFilesForExistingFiles(relevant_path, allTrackerFilesList):
 
 
     if(len(toBeDownloadedList)>0):
-        print " Peer 9 : To be downloaded List in : ", toBeDownloadedList
+        print " Peer 1 : To be downloaded List in : ", toBeDownloadedList
     else:
-        print "Peer 9 : No new files that need to be downloaded. "
+        print "Peer 1 : No new files that need to be downloaded. "
     return toBeDownloadedList
 
 
@@ -423,9 +415,9 @@ def checkIfFileisDownloaded(relevant_path, trackerFile):
     trackerFileName = trackerFile.split(".track")
 
     if trackerFileName[0] in downloadedFilesList:
-        #print " Peer 9: Existing downloaded files : ", downloadedFilesList, " -  ", trackerFileName
+        #print " Peer 1: Existing downloaded files : ", downloadedFilesList, " -  ", trackerFileName
         return True
-    #print " Peer 9: Existing downloaded files : ", downloadedFilesList, " -  ", trackerFileName, ": ", trackerFileName[0]
+    #print " Peer 1: Existing downloaded files : ", downloadedFilesList, " -  ", trackerFileName, ": ", trackerFileName[0]
     return False
 
 def removeOriginallySharedFiles(relevant_path, allTrackerFilesList):
@@ -448,24 +440,23 @@ def mergeAllSegments(relevant_path, fileName, fileNameTemp):
     selectedFiles = []
     all_extensions = ['jpg', 'txt', 'png', 'gif','png','pdf']
     
-    allFilesList = [fn for fn in os.listdir(relevant_path+"temp/")
+    allFilesList = [fn for fn in os.listdir(relevant_path + "temp/")
             if any(fn.endswith(ext) for ext in all_extensions)]
-
+    
     fileNameList = fileName.split(".")
     #print "All Files: ", fileName, " ",allFilesList, "\n\n"
-
+    allFilesList = sorted(allFilesList, key=lambda x: int((x.split('_')[1]).split('.')[0]))
     #get all segments for the current file
-    for currentFile in allFilesList:
-        if currentFile.startswith(fileNameList[0]) == True:
-            selectedFiles.append(relevant_path + "temp/"+ currentFile)
-
+    
     #print selectedFiles
-
+    #print allFilesList
     with open(fileNameTemp, "wb") as outfile:
-        for f in selectedFiles:
-            with open(f, "rb") as infile:
-                outfile.write(infile.read())  
+        for f in allFilesList:
+            with open(relevant_path +"temp/"+f, "rb") as infile:
+                outfile.write(infile.read())
+            infile.close()
+    outfile.close()
 
-    #return fileNameTemp  
+    return fileNameTemp  
 
    

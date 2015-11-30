@@ -5,6 +5,7 @@ import sys
 import time
 import glob
 import os
+import shutil
 
 
 from client import client_module
@@ -18,7 +19,11 @@ if __name__ == "__main__":
     
 
 def execute_client( threadName, config):
+
   relevant_path = config["pathToSharedFolder"]
+  if os.path.exists(relevant_path+"temp/"):
+    shutil.rmtree(relevant_path+"temp/")
+    
   delete_extensions = ['track','temp']
     
   deleteFilesList = [fn for fn in os.listdir(relevant_path)
@@ -38,7 +43,7 @@ try:
    thread.start_new_thread( execute_server, ("Thread-1", config) )
    thread.start_new_thread( execute_client, ("Thread-2", config) )
 except:
-   print "Peer 11 - Error: unable to start thread"
+   print "Peer 1 - Error: unable to start thread"
 
 while 1:
 	pass
