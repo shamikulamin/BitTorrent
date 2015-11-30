@@ -13,7 +13,7 @@ from server import server_module
 
 if __name__ == "__main__":
     config = {}
-    execfile("./Client1/settings.conf", config) 
+    execfile("./Client3/settings.conf", config) 
     # python 3: exec(open("example.conf").read(), config)
 
     
@@ -43,7 +43,7 @@ try:
    thread.start_new_thread( execute_server, ("Thread-1", config) )
    thread.start_new_thread( execute_client, ("Thread-2", config) )
 except:
-   print "Peer 1 - Error: unable to start thread"
+   print "Peer 3 - Error: unable to start thread"
 
 while 1:
 	pass
