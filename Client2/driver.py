@@ -13,7 +13,7 @@ from server import server_module
 
 if __name__ == "__main__":
     config = {}
-    execfile("./Client2/settings.conf", config) 
+    execfile("./Client2/settings.conf", config)
     # python 3: exec(open("example.conf").read(), config)
 
     
@@ -21,7 +21,6 @@ if __name__ == "__main__":
 def execute_client( threadName, config):
 
   relevant_path = config["pathToSharedFolder"]
-
   if os.path.exists(relevant_path+"temp/"):
     shutil.rmtree(relevant_path+"temp/")
     
@@ -36,7 +35,7 @@ def execute_client( threadName, config):
   client_module(socket, config)
 
 def execute_server(threadName, config):
-  server_module(socket, config)
+	server_module(socket, config)
 
 
 # Create two threads as follows
@@ -47,4 +46,4 @@ except:
    print "Peer 2 - Error: unable to start thread"
 
 while 1:
-  pass
+	pass

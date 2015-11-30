@@ -1,0 +1,40 @@
+ = 0;
+			break;
+		}
+		else if((arg1[j] != arg2[j]) && (arg2[j] == '0')){		// confirms that A > B
+			break;
+		}
+	}
+	return overflow;
+}
+///////////////////////////////////////////////////////////////////////////////
+
+
+
+////////////////////// Normalize Args/////////////////////////
+// arg: inplace normalization pointer for argmuent
+// factor: number of bits normalized
+// mode: defines whether normalizing or adjusting. default: normalization
+void arg_normalize(string & arg, int & factor, int mode = 0){
+	// normalize upto normalization factor
+	if (mode == 1){
+		int j = 1;
+		while (j <= factor)
+		{
+			for(int i = 1; i < arg.length()-1; i++){
+				arg[i] = arg[i+1];
+			}
+			arg[arg.length()-1] = '*';
+			j++;
+			total_cost += 3;							// each shift for adjustment costs 3dt
+		}
+	}
+	// normalize and find the normalization factor
+	else {
+		while (arg[1] == '0'){
+			for (int i = 1; i < arg.length()-1; i ++){
+				arg[i] = arg[i+1];
+			}
+			arg[arg.length()-1] = '0';
+			factor++;
+			total_cost += 3; 							// each shift tak

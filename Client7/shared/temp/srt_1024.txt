@@ -1,0 +1,14 @@
+ime;
+};
+/////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////// print helper functions////////////////////////////////////////////////////////////////////////////////////////////////
+void println(){dout << endl;}
+//specilized print function: decreses visual representation complexity for showing args in console
+void println (string str){if(str[0] == '1'){str.insert(1, ".");}else if (str[0] == '0') {str[0] = '.';}else{}dout << str << endl;}
+//specilized print function: decreses visual representation complexity for showing args in console
+void print(string str){if(str[0] == '1'){str.insert(1, ".");}else if (str[0] == '0'){str[0] = '.';}else{}dout << " " << str << " ";}
+//prints in special format to show simulaiton steps
+void print_simulation_step(string description, string str, int b = 0, bool ir = false, bool st = false){
+	int w = 5

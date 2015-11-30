@@ -13,7 +13,7 @@ from server import server_module
 
 if __name__ == "__main__":
     config = {}
-    execfile("./Client3/settings.conf", config) 
+    execfile("./Client3/settings.conf", config)
     # python 3: exec(open("example.conf").read(), config)
 
     

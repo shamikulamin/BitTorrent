@@ -1,4 +1,5 @@
-﻿def server_module(socket, config):
+import os.path
+def server_module(socket, config):
     HOST_S = socket.gethostbyname(socket.gethostname())               
     PORT_S = config["port"]
     maxSegmentSize = config["maxSegmentSize"]
@@ -10,10 +11,10 @@
     socket.listen(1)
     while (1):
         conn, addr = socket.accept()
-        print 'Peer 7 : New client connected ..'
+        #print 'Peer 7 : New client connected ..'
         reqCommand = conn.recv(maxSegmentSize)
         response = reqCommand.split(",")
-        print 'Client> %s' %(reqCommand)
+        #print 'Client> %s' %(reqCommand)
         if (reqCommand == 'quit'):
             break
         #elif (reqCommand == lls):
@@ -36,19 +37,21 @@
             elif (response[0] == 'download'):
                 #print "Here I am"
                 if ((int(response[3])-int(response[2])) <= int(maxSegmentSize)):
-                    with open(pathToSharedFolder+response[1], 'rb') as file_to_send:
-                        file_to_send.seek(int(response[2]),0)
-                        data = file_to_send.read(int(response[3]) - int(response[2]))
-                        #print "Sent data : " , "\n From: ",response[2]," To: ", response[3], "\n\n"
-                        conn.sendall(data)
-                        print 'Peer 7 - Send Successful'
-                elif ((int(response[3])-int(response[2])) <= int(maxSegmentSize)):
-                    with open(pathToSharedFolder+response[1]+".temp", 'rb') as file_to_send:
-                        file_to_send.seek(int(response[2]),0)
-                        data = file_to_send.read(int(response[3]) - int(response[2]))
-                        #print "Sent data : " , "\n From: ",response[2]," To: ", response[3], "\n\n"
-                        conn.sendall(data)
-                        print 'Peer 7 - Send Successful'
+                    if (os.path.exists(pathToSharedFolder+response[1])):
+                        with open(pathToSharedFolder+response[1], 'rb') as file_to_send:
+                            file_to_send.seek(int(response[2]),0)
+                            data = file_to_send.read(int(response[3]) - int(response[2]))
+                            #print "Sent data : " , "\n From: ",response[2]," To: ", response[3], "\n\n"
+                            conn.sendall(data)
+                            file_to_send.close()
+                            print 'Peer 7 - Send Successful'
+                    else:
+                        print "Peer 7: Try Downloading segment from Temp folder : ","\n\n"
+                        with open(pathToSharedFolder+"temp/"+response[1].split('.')[0]+"_"+response[2]+"."+response[1].split('.')[1], 'rb') as file_to_send:
+                            data = file_to_send.read()
+                            conn.sendall(data)
+                            file_to_send.close()
+                            print 'Peer 7 - Send Segment Successful'
                 else: 
                     print "Peer 7 - Request segment size is greater than 1 KB. Don't send anything !! \n\n"
         conn.close()

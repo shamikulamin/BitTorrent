@@ -1,4 +1,4 @@
-﻿import httplib
+import httplib
 import urllib
 import thread
 import time
@@ -27,13 +27,13 @@ def connect_tracker_server(params,socket, command, tracker_server_host, tracker_
         data = socket.recv(maxFileSizeFromTrackerServer)
         
         if command == 'list':
-            print "Peer 5 - LIST of tracker Files  :\n" ,data
+            print "Peer 4 - LIST of tracker Files  :\n" ,data
             socket.close()
             return data
            
         
         if command == 'get':
-            #print "Peer 5 - GET tracker File :\n" ,data
+            #print "Peer 4 - GET tracker File :\n" ,data
             socket.close()
             return data
 
@@ -102,7 +102,7 @@ def handle_tracker_server(threadname, socket, delay, relevant_path, included_ext
                 #print " Update Tracker File : List of segments: \n ", listOfSegments
                 for index in range(len(listOfSegments) -1):
                     segmentLine = listOfSegments[index].split(":")
-                    #print "Peer 5: Update the tracker server file with ", segmentLine,"\n\n"
+                    #print "Peer 4: Update the tracker server file with ", segmentLine,"\n\n"
 
                     params = updateTrackerFile(relevant_path+file, segmentLine)
                     #print " Update Tracker Params: ", params
@@ -137,7 +137,7 @@ def connect_peer_server(threadname, relevant_path, downloadedFiles, downloadingF
         
         #print "downloading Files" , downloadingFiles, " toBeDownloadedFileList ", toBeDownloadedFileList
         #if (len(downloadedFiles) < len(toBeDownloadedFileList)):
-        #print "Peer 5: All tracker files lists that need to be downloaded: ", toBeDownloadedFileList, "\n\n"
+        #print "Peer 4: All tracker files lists that need to be downloaded: ", toBeDownloadedFileList, "\n\n"
         if len(toBeDownloadedFileList) > 0:
             # last one is always empty
             for index in range(len(toBeDownloadedFileList)-1):
@@ -157,7 +157,7 @@ def connect_peer_server(threadname, relevant_path, downloadedFiles, downloadingF
                         if line not in getTrackerString:
                             getTrackerString += line +"\n"
 
-                print "Peer 5 : GET Tracker File: \n " , #getTrackerString, "\n\n"
+                print "Peer 4 : GET Tracker File: \n " , #getTrackerString, "\n\n"
                 try:
                     #print "END HERE "
                     # try downloading the files as per the tracker file
@@ -200,7 +200,7 @@ def client_module(socket, config):
     #inputCommand = "share"
     sharedFiles = [] 
     trackerUpdateTime = config["updateTime"]
-    print "Update time is: ", trackerUpdateTime
+    #print "Update time is: ", trackerUpdateTime
 
     # List of files which are completely downloaded
     downloadedFiles =[]
@@ -223,7 +223,7 @@ def client_module(socket, config):
     maxSegmentSize = config["maxSegmentSize"]
     maxFileSizeFromTrackerServer = config["maxFileSizeFromTrackerServer"]
     
-    print "Peer 5 : IP ADDRESS: ", ip_address, " PORT: ", PORT
+    #print "Peer 4 : IP ADDRESS: ", ip_address, " PORT: ", PORT
 
     # files = glob.glob(relevant_path+'*')
     # for f in files:

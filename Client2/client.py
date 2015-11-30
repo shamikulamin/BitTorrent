@@ -1,4 +1,4 @@
-﻿import httplib
+import httplib
 import urllib
 import thread
 import time
@@ -200,7 +200,7 @@ def client_module(socket, config):
     #inputCommand = "share"
     sharedFiles = [] 
     trackerUpdateTime = config["updateTime"]
-    print "Update time is: ", trackerUpdateTime
+    #print "Update time is: ", trackerUpdateTime
 
     # List of files which are completely downloaded
     downloadedFiles =[]
@@ -223,7 +223,7 @@ def client_module(socket, config):
     maxSegmentSize = config["maxSegmentSize"]
     maxFileSizeFromTrackerServer = config["maxFileSizeFromTrackerServer"]
     
-    print "Peer 2 : IP ADDRESS: ", ip_address, " PORT: ", PORT
+    #print "Peer 2 : IP ADDRESS: ", ip_address, " PORT: ", PORT
 
     # files = glob.glob(relevant_path+'*')
     # for f in files:

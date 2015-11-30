@@ -1,4 +1,4 @@
-﻿import httplib
+import httplib
 import urllib
 import thread
 import time
@@ -102,7 +102,7 @@ def handle_tracker_server(threadname, socket, delay, relevant_path, included_ext
                 #print " Update Tracker File : List of segments: \n ", listOfSegments
                 for index in range(len(listOfSegments) -1):
                     segmentLine = listOfSegments[index].split(":")
-                    print "Peer 6: Update the tracker server file with ", segmentLine,"\n\n"
+                    #print "Peer 6: Update the tracker server file with ", segmentLine,"\n\n"
 
                     params = updateTrackerFile(relevant_path+file, segmentLine)
                     #print " Update Tracker Params: ", params
@@ -157,7 +157,7 @@ def connect_peer_server(threadname, relevant_path, downloadedFiles, downloadingF
                         if line not in getTrackerString:
                             getTrackerString += line +"\n"
 
-                print "Peer 6 : GET Tracker File: \n " , getTrackerString, "\n\n"
+                print "Peer 6 : GET Tracker File: \n " , #getTrackerString, "\n\n"
                 try:
                     #print "END HERE "
                     # try downloading the files as per the tracker file
@@ -200,7 +200,7 @@ def client_module(socket, config):
     #inputCommand = "share"
     sharedFiles = [] 
     trackerUpdateTime = config["updateTime"]
-    print "Update time is: ", trackerUpdateTime
+    #print "Update time is: ", trackerUpdateTime
 
     # List of files which are completely downloaded
     downloadedFiles =[]
@@ -223,7 +223,7 @@ def client_module(socket, config):
     maxSegmentSize = config["maxSegmentSize"]
     maxFileSizeFromTrackerServer = config["maxFileSizeFromTrackerServer"]
     
-    print "Peer 6 : IP ADDRESS: ", ip_address, " PORT: ", PORT
+    #print "Peer 6 : IP ADDRESS: ", ip_address, " PORT: ", PORT
 
     # files = glob.glob(relevant_path+'*')
     # for f in files:
