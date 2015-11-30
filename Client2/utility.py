@@ -1,4 +1,4 @@
-﻿import httplib
+import httplib
 import urllib
 import time
 import socket
@@ -210,7 +210,7 @@ def createTrackerFile(filename, description, ip_address, PORT):
     #create the local copy of the tracker file
     #file = open("tracker"+str(timestamp)+".txt", "w")
     string = "Peer 2: "+ "Create Tracker" + " Filename: "+actualFileName+" Filesize: "+ str(filesize)+" Description:"+description+" MD5:"+md5+" "+str(ip_address)+":"+str(PORT)+":0:"+str(filesize)+":"+str(timestamp)
-    print string, "\n\n"
+    # print string, "\n\n"
     params = "GET command=createTracker&filename="+actualFileName+"&filesize="+str(filesize)+"&description="+description+"&md5="+md5+"&ip="+str(ip_address)+"&port="+str(PORT)+"&timestamp="+str(timestamp)
     #file.write(string)
     #file.close()
@@ -225,7 +225,7 @@ def updateTrackerFile(filename, segmentLine):
    
 
     string = "Peer 2: "+" Updatetracker "+ " Filename: "+ actualFileName+ " start byte "+ segmentLine[2]+" End byte "+ segmentLine[3]+" ip-address "+ segmentLine[0]+" port "+segmentLine[1]
-    print string ,"\n\n"
+    # print string ,"\n\n"
     params = "GET command=updateTracker&filename="+actualFileName+"&s_byte="+segmentLine[2]+"&e_byte="+segmentLine[3]+"&ip="+segmentLine[0]+"&port="+segmentLine[1]+"&timestamp="+segmentLine[4]
     
     return params
@@ -268,18 +268,18 @@ def downloadSegment(threadName, fileNameTemp, server_addr, server_port, segment_
     socket1.connect((server_addr, int(server_port)))
     socket1.send(downloadSegmentStr)
     #data = socket1.recv(1024)
-    print "Peer 2: Received data :" ,"\n" 
+    # print "Peer 2: Received data :" ,"\n"
     lock.acquire()
     global file_to_write
     #with open(fileNameTemp, 'rb+') as file_to_write:   
     if (fileNameTemp not in openFilesIndex):
         file_to_write = open(fileNameTemp, 'wb')
-        print 'opening file now\n'
+        #print 'opening file now\n'
         openFiles.append(file_to_write)
         openFilesIndex.append(fileNameTemp)
     else:
         index = openFilesIndex.index(fileNameTemp)
-        print 'opening existing file\n'
+        # print 'opening existing file\n'
         file_to_write = openFiles[index] 
 
     file_to_write.seek(int(segment_beginaddr)+1,0)
@@ -295,7 +295,7 @@ def downloadSegment(threadName, fileNameTemp, server_addr, server_port, segment_
         with open(relevant_path+fileName+".track", "ab") as updateTrackerFileWithCurrentSegment:
             segmentLineStr =str(ip_address)+":"+str(peer_server_port)+":"+segment_beginaddr+":"+segment_endaddr+":"+str(int(time.time()))+"\n"
             #print "Peer 2: Update tracker file with the current segment: \n"
-            print segmentLineStr
+            # print segmentLineStr
             updateTrackerFileWithCurrentSegment.write(segmentLineStr)
         updateTrackerFileWithCurrentSegment.close()
         
@@ -334,7 +334,7 @@ def downloadSegmentInTempFolder(threadName, fileNameTemp, server_addr, server_po
             with open(relevant_path+fileName+".track", "ab") as updateTrackerFileWithCurrentSegment:
                 segmentLineStr =str(ip_address)+":"+str(peer_server_port)+":"+segment_beginaddr+":"+segment_endaddr+":"+str(int(time.time()))+"\n"
                 #print "Peer 2: Update tracker file with the current segment: \n"
-                print segmentLineStr
+                #  print segmentLineStr
                 updateTrackerFileWithCurrentSegment.write(segmentLineStr)
             updateTrackerFileWithCurrentSegment.close()
         
@@ -407,7 +407,8 @@ def removeTrackerFilesForExistingFiles(relevant_path, allTrackerFilesList):
 
 
     if(len(toBeDownloadedList)>0):
-        print " Peer 2 : To be downloaded List in : ", toBeDownloadedList
+        do="nothing"
+        # print " Peer 2 : To be downloaded List in : ", toBeDownloadedList
     else:
         print "Peer 2 : No new files that need to be downloaded. "
     return toBeDownloadedList

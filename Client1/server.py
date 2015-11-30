@@ -11,10 +11,10 @@ def server_module(socket, config):
     socket.listen(1)
     while (1):
         conn, addr = socket.accept()
-        print 'Peer 1 : New client connected ..'
+        #print 'Peer 1 : New client connected ..'
         reqCommand = conn.recv(maxSegmentSize)
         response = reqCommand.split(",")
-        print 'Client> %s' %(reqCommand)
+        #print 'Client> %s' %(reqCommand)
         if (reqCommand == 'quit'):
             break
         #elif (reqCommand == lls):
