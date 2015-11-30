@@ -22,17 +22,21 @@ def getMd5(fname):
     with open(fname, "rb") as f:
         for chunk in iter(lambda: f.read(4096), b""):
             hash.update(chunk)
+    f.close()
     return hash.hexdigest()
 
 def getFileSize(filename):
     fr = open((filename), "r")
     fr.seek(0,2) # move the cursor to the end of the file
     size = fr.tell()
+    fr.close()
     return size
 
 def getFileSizeFromTrackerFile(trackerFile):
+    f = open(trackerFile , "r")
     #read file from the end of tracker file
-    lines = [line.rstrip('\n') for line in open(trackerFile).readlines()]
+    lines = [line.rstrip('\n') for line in f.readlines()]
+    f.close()
     #print "Total lines: " , len(lines) 
     # Read the file from the last line
     # len(lines) -1 should give the last line, decrement i
@@ -47,8 +51,10 @@ def getFileSizeFromTrackerFile(trackerFile):
     return fileSize[1]
 
 def getMd5FromTrackerFile(trackerFile):
+    f = open(trackerFile , "r")
     #read file from the end of tracker file
-    lines = [line.rstrip('\n') for line in open(trackerFile).readlines()]
+    lines = [line.rstrip('\n') for line in f.readlines()]
+    f.close()
 
     md5 = []
     for i, val in enumerate(lines):
@@ -61,8 +67,9 @@ def getMd5FromTrackerFile(trackerFile):
     return md5[1]
 
 def getFileNameFromTrackerFile(trackerFile):
+    f = open(trackerFile , "r")
     #read file from the end of tracker file
-    lines = [line.rstrip('\n') for line in open(trackerFile).readlines()]
+    lines = [line.rstrip('\n') for line in f.readlines()]
 
     fileName = []
     for i, val in enumerate(lines):
@@ -227,8 +234,11 @@ def parseTrackerFile(trackerFilename):
     
     listOfSegments = []
    
+    file_to_read = open(trackerFilename, "r")
     #read file from the end of tracker file
-    lines = [line.rstrip('\n') for line in reversed(open(trackerFilename).readlines())]
+    lines = [line.rstrip('\n') for line in reversed(file_to_read.readlines())]
+    file_to_read.close()
+
     #print "Total lines: " , len(lines) 
     # Read the file from the last line
     # len(lines) -1 should give the last line, decrement i
@@ -289,7 +299,7 @@ def downloadSegment(threadName, fileNameTemp, server_addr, server_port, segment_
             updateTrackerFileWithCurrentSegment.write(segmentLineStr)
         updateTrackerFileWithCurrentSegment.close()
         
-    file_to_write.flush()
+    file_to_write.close()
     updateDownloadedSegmentList(fileName, segment_beginaddr)
     lock.release();
     #print 'Client 1 : Download segment Successful from ',segment_beginaddr, " to ", segment_endaddr,"\n\n"
@@ -452,9 +462,10 @@ def mergeAllSegments(relevant_path, fileName, fileNameTemp):
     #print allFilesList
     with open(fileNameTemp, "wb") as outfile:
         for f in allFilesList:
-            with open(relevant_path +"temp/"+f, "rb") as infile:
-                outfile.write(infile.read())
-            infile.close()
+            if f.startswith(fileNameList[0]) == True:
+                with open(relevant_path +"temp/"+f, "rb") as infile:
+                    outfile.write(infile.read())
+                infile.close()
     outfile.close()
 
     return fileNameTemp  

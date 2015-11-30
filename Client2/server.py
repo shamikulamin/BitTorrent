@@ -43,12 +43,15 @@ def server_module(socket, config):
                             data = file_to_send.read(int(response[3]) - int(response[2]))
                             #print "Sent data : " , "\n From: ",response[2]," To: ", response[3], "\n\n"
                             conn.sendall(data)
+                            file_to_send.close()
                             print 'Peer 2 - Send Successful'
                     else:
-                        with open(pathToSharedFolder+"temp/"+response[1].split('.')[0]+"_"+str(int(response[3]) - int(response[2]))+response[1].split('.')[1], 'rb') as file_to_send:
-                            data = file_to_send.read(int(response[3]) - int(response[2]))
+                        print "Peer 2: Try Downloading segment from Temp folder : ","\n\n"
+                        with open(pathToSharedFolder+"temp/"+response[1].split('.')[0]+"_"+response[2]+"."+response[1].split('.')[1], 'rb') as file_to_send:
+                            data = file_to_send.read()
                             conn.sendall(data)
-                            print 'Peer 2 - Send Successful'
+                            file_to_send.close()
+                            print 'Peer 2 - Send Segment Successful'
                 else: 
                     print "Peer 2 - Request segment size is greater than 1 KB. Don't send anything !! \n\n"
         conn.close()
