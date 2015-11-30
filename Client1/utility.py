@@ -174,19 +174,11 @@ def process_data(threadName, delay, response, trackerFile, relevant_path, maxSeg
 
             else:
                 #print " Peer 1 : All segments are Downloaded: ", filename,"\n\n"
-                mergeAllSegments(relevant_path, filename, fileNameTemp)
+                fileNameTemp = mergeAllSegments(relevant_path, filename, fileNameTemp)
 
                 md5ForDownloadedFile = getMd5FromTrackerFile(relevant_path+trackerFile)
-                #index = openFilesIndex.index(fileNameTemp)
-                #print 'Peer 1: CLOSING FILE FOR MD5 CHECK\n'
-                # tempFile = openFiles[index]
-                # tempFile.close()
-                # del openFiles[index]
-                # del openFilesIndex[index]
                 md5ForOriginalFile = getMd5(fileNameTemp)
-                #print "Md5 for Original file: ",md5ForDownloadedFile,"\n"
-                #print "Md5 for downloaded file: ", md5ForOriginalFile ,"\n"
-                #print "MD5 same: str(md5ForDownloadedFile) == str(md5ForOriginalFile)", md5ForDownloadedFile.strip() == md5ForOriginalFile.strip()
+                
                 if md5ForDownloadedFile.strip() == md5ForOriginalFile.strip():
                     #shutil.rmtree(relevant_path+"temp/")
                     os.rename(fileNameTemp, relevant_path+filename)
@@ -448,24 +440,23 @@ def mergeAllSegments(relevant_path, fileName, fileNameTemp):
     selectedFiles = []
     all_extensions = ['jpg', 'txt', 'png', 'gif','png','pdf']
     
-    allFilesList = [fn for fn in os.listdir(relevant_path+"temp/")
+    allFilesList = [fn for fn in os.listdir(relevant_path + "temp/")
             if any(fn.endswith(ext) for ext in all_extensions)]
-
+    
     fileNameList = fileName.split(".")
     #print "All Files: ", fileName, " ",allFilesList, "\n\n"
-
+    allFilesList = sorted(allFilesList, key=lambda x: int((x.split('_')[1]).split('.')[0]))
     #get all segments for the current file
-    for currentFile in allFilesList:
-        if currentFile.startswith(fileNameList[0]) == True:
-            selectedFiles.append(relevant_path + "temp/"+ currentFile)
-
+    
     #print selectedFiles
-
+    #print allFilesList
     with open(fileNameTemp, "wb") as outfile:
-        for f in selectedFiles:
-            with open(f, "rb") as infile:
-                outfile.write(infile.read())  
+        for f in allFilesList:
+            with open(relevant_path +"temp/"+f, "rb") as infile:
+                outfile.write(infile.read())
+            infile.close()
+    outfile.close()
 
-    #return fileNameTemp  
+    return fileNameTemp  
 
    
