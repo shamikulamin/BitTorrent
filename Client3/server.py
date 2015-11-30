@@ -1,4 +1,5 @@
-﻿def server_module(socket, config):
+﻿import os.path
+def server_module(socket, config):
     HOST_S = socket.gethostbyname(socket.gethostname())               
     PORT_S = config["port"]
     maxSegmentSize = config["maxSegmentSize"]
@@ -10,7 +11,7 @@
     socket.listen(1)
     while (1):
         conn, addr = socket.accept()
-        print 'Peer 3 : New client connected ..'
+        print 'Peer 2 : New client connected ..'
         reqCommand = conn.recv(maxSegmentSize)
         response = reqCommand.split(",")
         print 'Client> %s' %(reqCommand)
@@ -19,7 +20,7 @@
         #elif (reqCommand == lls):
             #list file in server directory
         else:
-            print "Peer 3: Requested bytes " , response[0], response[1], response[2]
+            print "Peer 2: Requested bytes " , response[0], response[1], response[2]
             #string = reqCommand.split(' ', 1)   #in case of 'put' and 'get' method
             reqFile = response[1] 
 
@@ -32,25 +33,24 @@
                         file_to_write.write(data)
                         file_to_write.close()
                         break
-                print 'Peer 3 - Receive Successful'
+                print 'Peer 2 - Receive Successful'
             elif (response[0] == 'download'):
                 #print "Here I am"
                 if ((int(response[3])-int(response[2])) <= int(maxSegmentSize)):
-                    with open(pathToSharedFolder+response[1], 'rb') as file_to_send:
-                        file_to_send.seek(int(response[2]),0)
-                        data = file_to_send.read(int(response[3]) - int(response[2]))
-                        #print "Sent data : " , "\n From: ",response[2]," To: ", response[3], "\n\n"
-                        conn.sendall(data)
-                        print 'Peer 3 - Send Successful'
-                elif ((int(response[3])-int(response[2])) <= int(maxSegmentSize)):
-                    with open(pathToSharedFolder+response[1]+".temp", 'rb') as file_to_send:
-                        file_to_send.seek(int(response[2]),0)
-                        data = file_to_send.read(int(response[3]) - int(response[2]))
-                        #print "Sent data : " , "\n From: ",response[2]," To: ", response[3], "\n\n"
-                        conn.sendall(data)
-                        print 'Peer 3 - Send Successful'
+                    if (os.path.exists(pathToSharedFolder+response[1])):
+                        with open(pathToSharedFolder+response[1], 'rb') as file_to_send:
+                            file_to_send.seek(int(response[2]),0)
+                            data = file_to_send.read(int(response[3]) - int(response[2]))
+                            #print "Sent data : " , "\n From: ",response[2]," To: ", response[3], "\n\n"
+                            conn.sendall(data)
+                            print 'Peer 2 - Send Successful'
+                    else:
+                        with open(pathToSharedFolder+"temp/"+response[1].split('.')[0]+"_"+str(int(response[3]) - int(response[2]))+response[1].split('.')[1], 'rb') as file_to_send:
+                            data = file_to_send.read(int(response[3]) - int(response[2]))
+                            conn.sendall(data)
+                            print 'Peer 2 - Send Successful'
                 else: 
-                    print "Peer 3 - Request segment size is greater than 1 KB. Don't send anything !! \n\n"
+                    print "Peer 2 - Request segment size is greater than 1 KB. Don't send anything !! \n\n"
         conn.close()
 
     socket.close()
