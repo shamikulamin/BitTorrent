@@ -122,74 +122,80 @@ def process_data(threadName, delay, response, trackerFile, relevant_path, maxSeg
 
             while(checkIfAllSegmentsDownloaded(filename, maxSegmentSize, fileSize) == False):
                 time.sleep(2)
-                #get latest updated tracker file
-                listOfSegmentsInTrackerFile = parseTrackerFile(relevant_path + trackerFile)
-                #print " Peer 1: List of segments in tracker file: ",listOfSegmentsInTrackerFile,"\n\n"
-                # get filename
-                filename = listOfSegmentsInTrackerFile[len(listOfSegmentsInTrackerFile) - 1]
+                try:
+                    #get latest updated tracker file
+                    listOfSegmentsInTrackerFile = parseTrackerFile(relevant_path + trackerFile)
+                    #print " Peer 1: List of segments in tracker file: ",listOfSegmentsInTrackerFile,"\n\n"
+                    # get filename
+                    filename = listOfSegmentsInTrackerFile[len(listOfSegmentsInTrackerFile) - 1]
+                    listOfSegmentsInTrackerFile.pop()
+                    randomizedListOfSegments = listOfSegmentsInTrackerFile
 
-                #print " list of segments in tracker file is: ", listOfSegmentsInTrackerFile, "\n\n"
-                for index in range(len(listOfSegmentsInTrackerFile) -1):
-                    time.sleep(2)
-                    segmentLine = listOfSegmentsInTrackerFile[index]
-                    #print "Peer 1: Try downloading current segment : from " ,  , "\n\n"
+                    print " list of segments in tracker file is: ", randomizedListOfSegments, "\n\n"
+                    for index in range(len(listOfSegmentsInTrackerFile) -1):
+                        time.sleep(2)
+                        segmentLine = listOfSegmentsInTrackerFile[index]
+                        #print "Peer 1: Try downloading current segment : from " ,  , "\n\n"
 
-                    # calculate which segements to download, then download them
-                    inf = segmentLine.split(":")
+                        # calculate which segements to download, then download them
+                        inf = segmentLine.split(":")
 
-                    print "Peer 1: Try downloading segment from " , inf[2], " to ", inf[3], "\n\n"
-                    if int(inf[3]) - int(inf[2]) == int(fileSize):
-                        #print "Peer 1: Entire file is present with the peer ", "\n"
-                        #check if any segment in the entire file is pending to be downloaded in increasing order
-                        startByte = int(inf[2])
-                        endByte = startByte + int(maxSegmentSize)
-                        # for last segment
-                        if(endByte > int(fileSize)):
-                            endByte = int(fileSize)
-                        #try downloading each segment in increasing sequential order from the original peer
-                        while(startByte < int(fileSize)):
-                            #print "StartByte: ", startByte, " EndByte: ", endByte
-                            isSegmentNeededToBeDownloaded = checkIfSegmentIsAlreadyDownloaded(filename, str(startByte))
-                            
-                            if isSegmentNeededToBeDownloaded == True:
-                                inf[2] = str(startByte)
-                                inf[3] = str(endByte)
-                                break;
-
-                            startByte = endByte
+                        #print "Peer 1: Try downloading segment from " , inf[2], " to ", inf[3], "\n\n"
+                        if int(inf[3]) - int(inf[2]) == int(fileSize):
+                            #print "Peer 1: Entire file is present with the peer ", "\n"
+                            #check if any segment in the entire file is pending to be downloaded in increasing order
+                            startByte = int(inf[2])
                             endByte = startByte + int(maxSegmentSize)
+                            # for last segment
                             if(endByte > int(fileSize)):
                                 endByte = int(fileSize)
-                    else:
-                        isSegmentNeededToBeDownloaded = checkIfSegmentIsAlreadyDownloaded(filename, inf[2])
-                    #print " Peer 1: Does this segment need to be downloaded ? ", inf[2], " ", inf[3], isSegmentNeededToBeDownloaded, "\n\n"
-                    #downloadSegment_old(string)
-                    
-                    try:
-                        #print "END HERE "
-                        if isSegmentNeededToBeDownloaded == True:
-                            thread.start_new_thread( downloadSegmentInTempFolder, ("Thread-4", fileNameTemp, inf[0], inf[1], inf[2], inf[3], filename, maxSegmentSize,ip_address,peer_server_port, relevant_path));
-                        #print "data successfully written to file"
-                    except:
-                        print "Error: unable to start thread - process_data"
-                    #resultFile.seek(inf[2])
-                    # new download segment executes as thread, downloads segment indicated to stream, updates local tracker #
-                    # pass arguments: open filestream, server ip, server port, segment begin, segment end
-            
-            if not os.path.exists(relevant_path+"temp/"):
-                print " Peer 1: Complete file for this tracker file Downloaded - ", trackerFile, " \n\n" 
+                            #try downloading each segment in increasing sequential order from the original peer
+                            while(startByte < int(fileSize)):
+                                #print "StartByte: ", startByte, " EndByte: ", endByte
+                                isSegmentNeededToBeDownloaded = checkIfSegmentIsAlreadyDownloaded(filename, str(startByte))
+                                
+                                if isSegmentNeededToBeDownloaded == True:
+                                    inf[2] = str(startByte)
+                                    inf[3] = str(endByte)
+                                    break;
 
-            else:
-                #print " Peer 1 : All segments are Downloaded: ", filename,"\n\n"
-                fileNameTemp = mergeAllSegments(relevant_path, filename, fileNameTemp)
+                                startByte = endByte
+                                endByte = startByte + int(maxSegmentSize)
+                                if(endByte > int(fileSize)):
+                                    endByte = int(fileSize)
+                        else:
+                            isSegmentNeededToBeDownloaded = checkIfSegmentIsAlreadyDownloaded(filename, inf[2])
+                        #print " Peer 1: Does this segment need to be downloaded ? ", inf[2], " ", inf[3], isSegmentNeededToBeDownloaded, "\n\n"
+                        #downloadSegment_old(string)
+                        
+                        try:
+                            #print "END HERE "
+                            if isSegmentNeededToBeDownloaded == True:
+                                thread.start_new_thread( downloadSegmentInTempFolder, ("Thread-4", fileNameTemp, inf[0], inf[1], inf[2], inf[3], filename, maxSegmentSize,ip_address,peer_server_port, relevant_path));
+                            #print "data successfully written to file"
+                        except:
+                            print "Error: unable to start thread - process_data"
+                        #resultFile.seek(inf[2])
+                        # new download segment executes as thread, downloads segment indicated to stream, updates local tracker #
+                        # pass arguments: open filestream, server ip, server port, segment begin, segment end
+                except:
+                    print " Peer 1 : try getting segments \n\n"
 
-                md5ForDownloadedFile = getMd5FromTrackerFile(relevant_path+trackerFile)
-                md5ForOriginalFile = getMd5(fileNameTemp)
-                
-                if md5ForDownloadedFile.strip() == md5ForOriginalFile.strip():
-                    #shutil.rmtree(relevant_path+"temp/")
-                    os.rename(fileNameTemp, relevant_path+filename)
-                    print "Peer 1 - File successfully Downloaded. Not Corrupted \n\n"
+                if not os.path.exists(relevant_path+"temp/"):
+                    print " Peer 1: Complete file for this tracker file Downloaded - ", trackerFile, " \n\n" 
+
+                else:
+                    if os.path.isfile(fileNameTemp) == True:
+                        #print " Peer 1 : All segments are Downloaded: ", filename,"\n\n"
+                        fileNameTemp = mergeAllSegments(relevant_path, filename, fileNameTemp)
+
+                        md5ForDownloadedFile = getMd5FromTrackerFile(relevant_path+trackerFile)
+                        md5ForOriginalFile = getMd5(fileNameTemp)
+                        
+                        if md5ForDownloadedFile.strip() == md5ForOriginalFile.strip():
+                            #shutil.rmtree(relevant_path+"temp/")
+                            os.rename(fileNameTemp, relevant_path+filename)
+                            print "Peer 1 - File successfully Downloaded. Not Corrupted \n\n"
 
                 #print "DONE\n\n"
                 
@@ -308,7 +314,8 @@ def downloadSegment(threadName, fileNameTemp, server_addr, server_port, segment_
    
    
 def downloadSegmentInTempFolder(threadName, fileNameTemp, server_addr, server_port, segment_beginaddr, segment_endaddr, fileName, maxSegmentSize,ip_address,peer_server_port, relevant_path):
-    #print "Download segment: ", server_addr, server_port, segment_beginaddr, "  ",segment_endaddr,"\n\n"
+    lock.acquire()
+    print "Try Downloading segment: ", " from " , segment_beginaddr, " to  ",segment_endaddr,"\n\n"
     downloadSegmentStr = "download," + fileName + ","+segment_beginaddr+"," + segment_endaddr
     #print "Server Address : ", server_addr, " Server Port: ", server_port
     socket1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -316,7 +323,7 @@ def downloadSegmentInTempFolder(threadName, fileNameTemp, server_addr, server_po
     socket1.send(downloadSegmentStr)
 #data = socket1.recv(1024)
     #print "Peer 1: Received data :" ,"\n" 
-    lock.acquire()
+    
     if not os.path.exists(relevant_path+"temp/"):
         os.makedirs(relevant_path+"temp/")
 
@@ -340,10 +347,11 @@ def downloadSegmentInTempFolder(threadName, fileNameTemp, server_addr, server_po
         
     file_to_write.close()
     updateDownloadedSegmentList(fileName, segment_beginaddr)
-    lock.release();
+    
 
     #print 'Client 1 : Download segment Successful from ',segment_beginaddr, " to ", segment_endaddr,"\n\n"
     socket1.close()
+    lock.release();
 
 
 def updateDownloadedSegmentList(filename, s_byte):
