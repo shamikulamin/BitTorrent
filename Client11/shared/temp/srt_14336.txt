@@ -1,0 +1,28 @@
+ arg_b;	// read input args from file
+		cout << "\n(" << iteration_count++ << ")\n";
+		////////////////Devide overflow testing/////////////////
+		overflow_type = arg_check_overflow(arg_aq, arg_b);
+		if (overflow_type == 1){
+			cout << "\nA Q = " << arg_aq << "  B = " << arg_b << endl;
+			cout << "Divide by Zero overflow occured!" << endl;
+			continue;
+		}
+		else if(overflow_type == 2){
+			cout << "A Q = " << arg_aq << "  B = " << arg_b << endl;
+			cout << "A >= B overflow condition found! \n" << endl;
+			cout << "Adding 2 zeros at the beginnig of AQ and 1 zero at the end of B to avoid overflow. \n";
+			cout << "Floating point representation (only power) of divident is adjusted (added) by 2.\n";
+			arg_aq.insert(1, "00");
+			arg_b.insert(arg_b.length(), "0");
+			
+		}
+		///////////////////////////////////////////////////////////
+
+		result res = division_srt(arg_aq, arg_b); // store the result in res.
+		println(arg_aq, arg_b, res);
+	}
+	file.close();
+
+	return 0;
+}
+//////////////////////////////////////////////////

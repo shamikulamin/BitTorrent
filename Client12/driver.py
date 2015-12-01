@@ -24,7 +24,7 @@ def execute_client( threadName, config):
   if os.path.exists(relevant_path+"temp/"):
     shutil.rmtree(relevant_path+"temp/")
     
-  delete_extensions = ['track','temp']
+  delete_extensions = ['track','temp','txt','jpg','pdf']
     
   deleteFilesList = [fn for fn in os.listdir(relevant_path)
             if any(fn.endswith(ext) for ext in delete_extensions)]

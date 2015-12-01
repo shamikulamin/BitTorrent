@@ -1,0 +1,20 @@
+ += 3; 						// one right shift while correcting the remainder, costs 3 dt
+		print_simulation_step("RSH A", aq);					
+		arg_add(aq, b);							// Add B to A
+		print_simulation_step("Add B", b, 1);
+	}
+	//////Now AQ has the Remainder & Quotient, process the result/////////////////////
+	//print_simulation_step("A Q", aq, 0, true); // original code
+	print_simulation_step("A Q", aq, 0, i_r? false:true);
+	aq[0] = b[0] = '.';														// all the calculaitons are done, change back to original form
+	string quo = "." + aq.substr(b.length(), aq.length());					// get the quotient from Q
+	int r_factor = 1;
+	for (; (aq[r_factor] != '*') && (r_factor < b.length()) ; r_factor++);	// find the position of * in A
+	string rmdr = aq.substr(0, r_factor);									// get temporary Remainder value
+																			// Convert to actual value of Remainder
+	for(int i = 0; i < aq.length() - r_factor; i++){
+		rmdr.insert(1, "0");												// insert as many zeroes as needed
+	}
+
+	print_simulation_step("Results", 25);
+	print_simulatio

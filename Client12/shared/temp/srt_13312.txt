@@ -1,0 +1,30 @@
+n_step("Remainder", rmdr, 2);
+	print_simulation_step("Quotient", quo, 2);
+
+	stringstream ss;
+	ss << total_cost;
+	string temp;
+	ss >> temp;
+	print_simulation_step("Total Cost", temp + " Δt", 2, false, true);
+	print_simulation_step();
+	print_simulation_step();
+	//////////////////////////// Load the result into result object////////////////////
+	div_result.remainder = rmdr;
+	div_result.quotient = quo;
+	div_result.execution_time = total_cost;
+	total_cost = 0; // set the total cost count to zero again
+
+	return div_result;
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////// MAIN FUNCTION //////////////////////////////////////////////////////////////////
+
+int main(int argc, char * argv[]){
+	string arg_aq, arg_b;
+	int overflow_type = 0;
+	ifstream file("input.txt");
+	if (!file.is_open()) {cout << "Can't open file !" << endl; exit(EXIT_FAILURE);}
+	int iteration_count = 1;
+	while (! file.eof()){
+		file >> arg_aq >>

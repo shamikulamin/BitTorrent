@@ -1,0 +1,41 @@
+break;
+			}
+												// skip over zeroes
+			if( ! arg_skip_over(aq, shift_count, '0')){
+				break;
+			}
+
+			if (! pos_result){
+				pos_result = true;
+			}
+		}
+		else{
+			pos_result = false;
+			print_simulation_step("Negative result", aq);
+			arg_shl_new_q(aq, '0');						// result negetive, shift AQ left, q_0 = 0
+			shift_count--;
+			print_simulation_step("Shift AQ left, q_0 <- 0", aq);
+														// check if we already did n + 1 left shifts
+			if(shift_count == 0){
+				break;
+			}
+														// skip over 1's
+			if( ! arg_skip_over(aq, shift_count, '1')){
+				break;
+			}
+			arg_add(aq, b);								// add B to A
+			print_simulation_step("Add B", b, 1);
+		}
+	}
+
+	//////////////////////////////Remainder Correction///////////////////////////////
+												// Remainder is negative, correct it.
+	bool i_r = false;
+	if(aq[0] == '1'){
+		i_r = true;
+		print_simulation_step("Remainder Correction", 20);
+												// Right Shift A once
+		for(int i = b.length()-1; i >0 ; i--){
+			aq[i] = aq[i-1];
+		}
+		total_cost

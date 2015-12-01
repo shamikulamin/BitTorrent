@@ -310,11 +310,11 @@ def downloadSegment(threadName, fileNameTemp, server_addr, server_port, segment_
 def downloadSegmentInTempFolder(threadName, fileNameTemp, server_addr, server_port, segment_beginaddr, segment_endaddr, fileName, maxSegmentSize,ip_address,peer_server_port, relevant_path):
     #print "Download segment: ", server_addr, server_port, segment_beginaddr, "  ",segment_endaddr,"\n\n"
     downloadSegmentStr = "download," + fileName + ","+segment_beginaddr+"," + segment_endaddr
-    #print "Server Address : ", server_addr, " Server Port: ", server_port   
+    #print "Server Address : ", server_addr, " Server Port: ", server_port
     socket1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     socket1.connect((server_addr, int(server_port)))
     socket1.send(downloadSegmentStr)
-    #data = socket1.recv(1024)
+#data = socket1.recv(1024)
     #print "Peer 8: Received data :" ,"\n" 
     lock.acquire()
     if not os.path.exists(relevant_path+"temp/"):

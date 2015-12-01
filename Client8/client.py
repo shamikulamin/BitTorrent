@@ -161,8 +161,8 @@ def connect_peer_server(threadname, relevant_path, downloadedFiles, downloadingF
                 try:
                     #print "END HERE "
                     # try downloading the files as per the tracker file
-                    #pass the contents of tracker file 
-                    thread.start_new_thread( process_data, ("Thread-3", 2, getTrackerString, trackerFile, relevant_path, maxSegmentSize, ip_address, peer_server_port) )
+                    #pass the contents of tracker file
+                    thread.start_new_thread( process_data, ("Thread-3", 5, getTrackerString, trackerFile, relevant_path, maxSegmentSize, ip_address, peer_server_port) )
                 except:
                     print "Error: unable to start thread - process_data"
 
