@@ -157,7 +157,7 @@ def connect_peer_server(threadname, relevant_path, downloadedFiles, downloadingF
                         if line not in getTrackerString:
                             getTrackerString += line +"\n"
 
-                print "Peer 12 : GET Tracker File: \n " , #getTrackerString, "\n\n"
+                print "Peer 12 : GET Tracker File: \n " , getTrackerString, "\n\n"
                 try:
                     #print "END HERE "
                     # try downloading the files as per the tracker file

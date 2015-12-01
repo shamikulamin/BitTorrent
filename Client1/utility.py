@@ -1,3 +1,4 @@
+from random import shuffle
 import httplib
 import urllib
 import time
@@ -130,11 +131,12 @@ def process_data(threadName, delay, response, trackerFile, relevant_path, maxSeg
                     filename = listOfSegmentsInTrackerFile[len(listOfSegmentsInTrackerFile) - 1]
                     listOfSegmentsInTrackerFile.pop()
                     randomizedListOfSegments = listOfSegmentsInTrackerFile
+                    shuffle(randomizedListOfSegments)
 
-                    print " list of segments in tracker file is: ", randomizedListOfSegments, "\n\n"
-                    for index in range(len(listOfSegmentsInTrackerFile) -1):
+                    #print " list of segments in tracker file is: ", randomizedListOfSegments, "\n\n"
+                    for segmentLine in randomizedListOfSegments:
                         time.sleep(2)
-                        segmentLine = listOfSegmentsInTrackerFile[index]
+                        # segmentLine = randomizedListOfSegments[index]
                         #print "Peer 1: Try downloading current segment : from " ,  , "\n\n"
 
                         # calculate which segements to download, then download them
