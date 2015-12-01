@@ -77,7 +77,7 @@ def handler(clientsock,addr):
 		      clientsock.send(files+'\n')
 
     elif command.lower()=="get":
-        print "Get command " , keyVal , "\n"
+        #print "Get command " , keyVal , "\n"
         filename=keyVal[1].split('=')[1]
         if os.path.isdir(filename):
             do="nothing"
