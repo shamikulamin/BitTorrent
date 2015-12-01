@@ -19,7 +19,7 @@ while 1:
         print "Starting Server Thread and First 2 Peers"      
         p1 = subprocess.Popen('exec python ./PyTracker/Tracker.py',shell=True)
         p2 = subprocess.Popen('exec python ./Client1/driver.py',shell=True)
-        p3 = subprocess.Popen('python ./Client2/driver.py',shell=True)
+        p3 = subprocess.Popen('exec python ./Client2/driver.py',shell=True)
     elif currentTime==startSeconds+30 and peerFlag==1:
         peerFlag=0
         print "Starting First Batch of Peers"
