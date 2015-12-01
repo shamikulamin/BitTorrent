@@ -12,6 +12,8 @@ import os
 import collections
 import glob
 import shutil
+import errno
+from socket import error as socket_error
 
 segmentDict = collections.defaultdict(list)
 lock = threading.Lock()
@@ -196,7 +198,8 @@ def process_data(threadName, delay, response, trackerFile, relevant_path, maxSeg
                         
                         if md5ForDownloadedFile.strip() == md5ForOriginalFile.strip():
                             #shutil.rmtree(relevant_path+"temp/")
-                            os.rename(fileNameTemp, relevant_path+filename)
+                            if os.path.isfile(fileNameTemp) == True:
+                                os.rename(fileNameTemp, relevant_path+filename)
                             print "Peer 1 - File successfully Downloaded. Not Corrupted \n\n"
 
                 #print "DONE\n\n"
@@ -316,44 +319,51 @@ def downloadSegment(threadName, fileNameTemp, server_addr, server_port, segment_
    
    
 def downloadSegmentInTempFolder(threadName, fileNameTemp, server_addr, server_port, segment_beginaddr, segment_endaddr, fileName, maxSegmentSize,ip_address,peer_server_port, relevant_path):
-    lock.acquire()
-    print "Try Downloading segment: ", " from " , segment_beginaddr, " to  ",segment_endaddr,"\n\n"
+    #lock.acquire()
+    print "\n\n Try Downloading segment: ", " from " , segment_beginaddr, " to  ",segment_endaddr,"\n\n"
     downloadSegmentStr = "download," + fileName + ","+segment_beginaddr+"," + segment_endaddr
     #print "Server Address : ", server_addr, " Server Port: ", server_port
     socket1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     socket1.connect((server_addr, int(server_port)))
-    socket1.send(downloadSegmentStr)
-#data = socket1.recv(1024)
-    #print "Peer 1: Received data :" ,"\n" 
-    
-    if not os.path.exists(relevant_path+"temp/"):
-        os.makedirs(relevant_path+"temp/")
+    try:
+        socket1.send(downloadSegmentStr)
 
-    fileNames = fileName.split(".")
-    with open(relevant_path+"temp/"+fileNames[0]+"_"+segment_beginaddr+"."+fileNames[1],"w") as file_to_write:   
-        while True:
-            data = socket1.recv(maxSegmentSize)
-            #print data
-            if not data:
-                break
-
-            #print data
-            file_to_write.write(data)
-
-            with open(relevant_path+fileName+".track", "ab") as updateTrackerFileWithCurrentSegment:
-                segmentLineStr =str(ip_address)+":"+str(peer_server_port)+":"+segment_beginaddr+":"+segment_endaddr+":"+str(int(time.time()))+"\n"
-                #print "Peer 1: Update tracker file with the current segment: \n"
-                #  print segmentLineStr
-                updateTrackerFileWithCurrentSegment.write(segmentLineStr)
-            updateTrackerFileWithCurrentSegment.close()
+    except socket_error as serr:
+        print " \n\n Peer 1 : The requesting Peer is terminated \n\n"
+        # if serr.errno != errno.ECONNREFUSED:
+        #     # Not the error we are looking for, re-raise
+        #     raise serr
+        #data = socket1.recv(1024)
+        #print "Peer 1: Received data :" ,"\n" 
         
-    file_to_write.close()
-    updateDownloadedSegmentList(fileName, segment_beginaddr)
-    
+        if not os.path.exists(relevant_path+"temp/"):
+            os.makedirs(relevant_path+"temp/")
 
-    #print 'Client 1 : Download segment Successful from ',segment_beginaddr, " to ", segment_endaddr,"\n\n"
-    socket1.close()
-    lock.release();
+        fileNames = fileName.split(".")
+        with open(relevant_path+"temp/"+fileNames[0]+"_"+segment_beginaddr+"."+fileNames[1],"w") as file_to_write:   
+            while True:
+                data = socket1.recv(maxSegmentSize)
+                #print data
+                if not data:
+                    break
+
+                #print data
+                file_to_write.write(data)
+
+                with open(relevant_path+fileName+".track", "ab") as updateTrackerFileWithCurrentSegment:
+                    segmentLineStr =str(ip_address)+":"+str(peer_server_port)+":"+segment_beginaddr+":"+segment_endaddr+":"+str(int(time.time()))+"\n"
+                    #print "Peer 1: Update tracker file with the current segment: \n"
+                    #  print segmentLineStr
+                    updateTrackerFileWithCurrentSegment.write(segmentLineStr)
+                updateTrackerFileWithCurrentSegment.close()
+            
+        file_to_write.close()
+        updateDownloadedSegmentList(fileName, segment_beginaddr)
+        
+
+        #print 'Client 1 : Download segment Successful from ',segment_beginaddr, " to ", segment_endaddr,"\n\n"
+        socket1.close()
+        #lock.release();
 
 
 def updateDownloadedSegmentList(filename, s_byte):
