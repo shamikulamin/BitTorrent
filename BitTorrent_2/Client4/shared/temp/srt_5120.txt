@@ -1,0 +1,40 @@
+es 3 dt time
+		}
+	}
+}
+//////////////////////////////////////////////////////////////
+
+////////////////////// Compliment function ///////////////////
+// arg1: unsigned value
+// arg2: 2's compliment
+void arg_compliment(const string & arg1, string & arg2){
+	//string arg2 = arg1;
+	total_cost += (arg1.length() -1);				// cost for 2's complitent , n * dt , n : numer of bits in arg1
+	arg2 = arg1;
+	arg2[0] = '1'; 	// represents negetive sign
+	for (int i = 1; i < arg1.length(); i ++){
+		if(arg1[i] == '0') arg2[i] = '1';
+		else arg2 [i] = '0';
+	}
+
+	// if the least significant bit is 0, just change it to 1 and return
+	if (arg2[arg1.length()-1] == '0'){
+		arg2[arg1.length()-1] = '1';
+		return;
+	}
+
+	// least significant bit is not 0
+	// can't change the zero index, that represents the sign bit, j must be > 0.
+	// normalizaiton also makes sure that adding 1 does not overflow
+	for (int j = arg1.length()-1; j > 0; j --){											   
+		if (arg2[j] == '0'){
+			arg2[j] = '1';
+			break;
+		}
+		arg2[j] = '0';
+	}
+
+	
+}
+
+//////////

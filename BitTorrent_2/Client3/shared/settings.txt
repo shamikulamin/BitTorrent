@@ -1,0 +1,191 @@
+# port which the client server listens for connections
+port = 12345
+#1KB
+maxSegmentSize = 1024
+maxFileSizeFromTrackerServer= 8000000
+#15 minutes
+updateTime = 5
+trackerServerPort = 4444
+pathToSharedFolder = "./Client1/shared/"
+# port which the client server listens for connections
+port = 12345
+#1KB
+maxSegmentSize = 1024
+maxFileSizeFromTrackerServer= 8000000
+#15 minutes
+updateTime = 5
+trackerServerPort = 4444
+pathToSharedFolder = "./Client1/shared/"
+# port which the client server listens for connections
+port = 12345
+#1KB
+maxSegmentSize = 1024
+maxFileSizeFromTrackerServer= 8000000
+#15 minutes
+updateTime = 5
+trackerServerPort = 4444
+pathToSharedFolder = "./Client1/shared/"
+# port which the client server listens for connections
+port = 12345
+#1KB
+maxSegmentSize = 1024
+maxFileSizeFromTrackerServer= 8000000
+#15 minutes
+updateTime = 5
+trackerServerPort = 4444
+pathToSharedFolder = "./Client1/shared/"
+# port which the client server listens for connections
+port = 12345
+#1KB
+maxSegmentSize = 1024
+maxFileSizeFromTrackerServer= 8000000
+#15 minutes
+updateTime = 5
+trackerServerPort = 4444
+pathToSharedFolder = "./Client1/shared/"
+# port which the client server listens for connections
+port = 12345
+#1KB
+maxSegmentSize = 1024
+maxFileSizeFromTrackerServer= 8000000
+#15 minutes
+updateTime = 5
+trackerServerPort = 4444
+pathToSharedFolder = "./Client1/shared/"
+# port which the client server listens for connections
+port = 12345
+#1KB
+maxSegmentSize = 1024
+maxFileSizeFromTrackerServer= 8000000
+#15 minutes
+updateTime = 5
+trackerServerPort = 4444
+pathToSharedFolder = "./Client1/shared/"
+# port which the client server listens for connections
+port = 12345
+#1KB
+maxSegmentSize = 1024
+maxFileSizeFromTrackerServer= 8000000
+#15 minutes
+updateTime = 5
+trackerServerPort = 4444
+pathToSharedFolder = "./Client1/shared/"
+# port which the client server listens for connections
+port = 12345
+#1KB
+maxSegmentSize = 1024
+maxFileSizeFromTrackerServer= 8000000
+#15 minutes
+updateTime = 5
+trackerServerPort = 4444
+pathToSharedFolder = "./Client1/shared/"
+# port which the client server listens for connections
+port = 12345
+#1KB
+maxSegmentSize = 1024
+maxFileSizeFromTrackerServer= 8000000
+#15 minutes
+updateTime = 5
+trackerServerPort = 4444
+pathToSharedFolder = "./Client1/shared/"
+# port which the client server listens for connections
+port = 12345
+#1KB
+maxSegmentSize = 1024
+maxFileSizeFromTrackerServer= 8000000
+#15 minutes
+updateTime = 5
+trackerServerPort = 4444
+pathToSharedFolder = "./Client1/shared/"
+# port which the client server listens for connections
+port = 12345
+#1KB
+maxSegmentSize = 1024
+maxFileSizeFromTrackerServer= 8000000
+#15 minutes
+updateTime = 5
+trackerServerPort = 4444
+pathToSharedFolder = "./Client1/shared/"
+# port which the client server listens for connections
+port = 12345
+#1KB
+maxSegmentSize = 1024
+maxFileSizeFromTrackerServer= 8000000
+#15 minutes
+updateTime = 5
+trackerServerPort = 4444
+pathToSharedFolder = "./Client1/shared/"
+# port which the client server listens for connections
+port = 12345
+#1KB
+maxSegmentSize = 1024
+maxFileSizeFromTrackerServer= 8000000
+#15 minutes
+updateTime = 5
+trackerServerPort = 4444
+pathToSharedFolder = "./Client1/shared/"
+# port which the client server listens for connections
+port = 12345
+#1KB
+maxSegmentSize = 1024
+maxFileSizeFromTrackerServer= 8000000
+#15 minutes
+updateTime = 5
+trackerServerPort = 4444
+pathToSharedFolder = "./Client1/shared/"
+# port which the client server listens for connections
+port = 12345
+#1KB
+maxSegmentSize = 1024
+maxFileSizeFromTrackerServer= 8000000
+#15 minutes
+updateTime = 5
+trackerServerPort = 4444
+pathToSharedFolder = "./Client1/shared/"
+# port which the client server listens for connections
+port = 12345
+#1KB
+maxSegmentSize = 1024
+maxFileSizeFromTrackerServer= 8000000
+#15 minutes
+updateTime = 5
+trackerServerPort = 4444
+pathToSharedFolder = "./Client1/shared/"
+# port which the client server listens for connections
+port = 12345
+#1KB
+maxSegmentSize = 1024
+maxFileSizeFromTrackerServer= 8000000
+#15 minutes
+updateTime = 5
+trackerServerPort = 4444
+pathToSharedFolder = "./Client1/shared/"
+# port which the client server listens for connections
+port = 12345
+#1KB
+maxSegmentSize = 1024
+maxFileSizeFromTrackerServer= 8000000
+#15 minutes
+updateTime = 5
+trackerServerPort = 4444
+pathToSharedFolder = "./Client1/shared/"
+# port which the client server listens for connections
+port = 12345
+#1KB
+maxSegmentSize = 1024
+maxFileSizeFromTrackerServer= 8000000
+#15 minutes
+updateTime = 5
+trackerServerPort = 4444
+pathToSharedFolder = "./Client1/shared/"
+# port which the client server listens for connections
+port = 12345
+#1KB
+maxSegmentSize = 1024
+maxFileSizeFromTrackerServer= 8000000
+#15 minutes
+updateTime = 5
+trackerServerPort = 4444
+pathToSharedFolder = "./Client1/shared/"
+# port which the client server listens for connections
+port = 12345
