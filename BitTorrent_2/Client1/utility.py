@@ -237,6 +237,7 @@ def updateTrackerFile(filename, segmentLine):
     fileNameList = filename.split("/")
     actualFileName = fileNameList[len(fileNameList) -1]
    
+    #print " Peer 1  : The segment line is : ", segmentLine, "   : END"
 
     string = "Peer 1: "+" Updatetracker "+ " Filename: "+ actualFileName+ " start byte "+ segmentLine[2]+" End byte "+ segmentLine[3]+" ip-address "+ segmentLine[0]+" port "+segmentLine[1]
     print string ,"\n\n"
@@ -352,10 +353,10 @@ def downloadSegmentInTempFolder(threadName, fileNameTemp, server_addr, server_po
                 file_to_write.write(data)
 
                 with open(relevant_path+fileName+".track", "ab") as updateTrackerFileWithCurrentSegment:
-                    segmentLineStr =str(ip_address)+":"+str(peer_server_port)+":"+segment_beginaddr+":"+segment_endaddr+":"+str(int(time.time()))+"\n"
+                    segmentLineStr =str(ip_address)+":"+str(peer_server_port)+":"+segment_beginaddr+":"+segment_endaddr+":"+str(int(time.time()))
                     #print "Peer 1: Update tracker file with the current segment: \n"
                     #  print segmentLineStr
-                    updateTrackerFileWithCurrentSegment.write(segmentLineStr)
+                    updateTrackerFileWithCurrentSegment.write(segmentLineStr+"\n")
                     
                 updateTrackerFileWithCurrentSegment.close()
             

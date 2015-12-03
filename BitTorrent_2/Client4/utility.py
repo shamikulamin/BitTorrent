@@ -307,10 +307,10 @@ def downloadSegment(threadName, fileNameTemp, server_addr, server_port, segment_
         file_to_write.write(data)
 
         with open(relevant_path+fileName+".track", "ab") as updateTrackerFileWithCurrentSegment:
-            segmentLineStr =str(ip_address)+":"+str(peer_server_port)+":"+segment_beginaddr+":"+segment_endaddr+":"+str(int(time.time()))+"\n"
+            segmentLineStr =str(ip_address)+":"+str(peer_server_port)+":"+segment_beginaddr+":"+segment_endaddr+":"+str(int(time.time()))
             #print "Peer 4: Update tracker file with the current segment: \n"
             # print segmentLineStr
-            updateTrackerFileWithCurrentSegment.write(segmentLineStr)
+            updateTrackerFileWithCurrentSegment.write(segmentLineStr+"\n")
         updateTrackerFileWithCurrentSegment.close()
         
     file_to_write.close()
